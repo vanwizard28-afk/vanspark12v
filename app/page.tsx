@@ -291,26 +291,28 @@ export default function Page() {
     setNewAc(false)
   }
 
+  const [checkoutError, setCheckoutError] = useState(false)
+
   const handleBlueprint = async () => {
     setDownloading(true)
+    setCheckoutError(false)
     trackEvent('blueprint_click', { daily_wh: Math.round(totals.dailyWh), inverter_w: totals.inverterW })
     try {
-      // Paid path once Stripe is configured; falls back to free download (503).
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ build: encodeState(state) }),
       })
-      if (res.ok) {
-        const { url } = await res.json()
-        if (url) {
-          window.location.href = url
-          return
-        }
+      const { url } = await res.json().catch(() => ({}))
+      if (res.ok && url) {
+        window.location.href = url
+        return
       }
-      await downloadBlueprint(state, totals)
-      trackEvent('blueprint_download', { daily_wh: Math.round(totals.dailyWh) })
-      setBlueprintOpen(false)
+      // Stripe not configured or session failed — do NOT give the PDF away;
+      // it is only delivered after a paid checkout returns with ?purchase=success.
+      setCheckoutError(true)
+    } catch {
+      setCheckoutError(true)
     } finally {
       setDownloading(false)
     }
@@ -1158,9 +1160,14 @@ export default function Page() {
                 disabled={downloading}
                 className="mt-5 w-full rounded-lg bg-amber-400 px-4 py-3 text-sm font-bold text-slate-950 transition hover:bg-amber-300 disabled:cursor-wait disabled:opacity-60"
               >
-                {downloading ? 'Generating PDF…' : 'Download blueprint PDF'}
+                {downloading ? 'Redirecting to checkout…' : 'Buy blueprint · £7.99'}
               </button>
-              <p className="mt-3 text-center text-[10px] text-slate-600">Generated live from your configuration. Stripe checkout activates automatically once keys are configured.</p>
+              {checkoutError && (
+                <p className="mt-3 rounded-lg border border-red-400/25 bg-red-400/[0.08] px-3 py-2 text-center text-[11px] text-red-300">
+                  Checkout isn't available just yet — please try again shortly.
+                </p>
+              )}
+              <p className="mt-3 text-center text-[10px] text-slate-600">Secure payment via Stripe. Your PDF generates automatically once payment completes.</p>
             </div>
           </div>
         )}
