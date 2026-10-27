@@ -19,7 +19,12 @@ export async function POST(req: NextRequest) {
     // empty body is fine — build state is optional
   }
 
-  const origin = req.headers.get('origin') ?? process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+  // Stripe rejects non-HTTPS return URLs except localhost. A phone browsing
+  // the dev server over the LAN IP (http://192.168.x.x:3000) fails session
+  // creation, so non-local http origins fall back to the canonical site URL.
+  const origin = req.headers.get('origin') ?? ''
+  const isLocal = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)
+  const base = isLocal || origin.startsWith('https://') ? origin : (process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000')
   const resume = build ? `?build=${encodeURIComponent(build)}` : ''
 
   try {
@@ -29,8 +34,8 @@ export async function POST(req: NextRequest) {
       mode: 'payment',
       line_items: [{ price: priceId, quantity: 1 }],
       // After payment, return the user to their exact build so nothing is lost.
-      success_url: `${origin}/${resume}${resume ? '&' : '?'}purchase=success`,
-      cancel_url: `${origin}/${resume}${resume ? '&' : '?'}purchase=cancelled`,
+      success_url: `${base}/${resume}${resume ? '&' : '?'}purchase=success`,
+      cancel_url: `${base}/${resume}${resume ? '&' : '?'}purchase=cancelled`,
       metadata: { build },
     })
     return NextResponse.json({ url: session.url })
