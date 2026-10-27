@@ -425,6 +425,7 @@ export default function Page() {
             <a className="transition hover:text-amber-300" href="#schematic">Schematic</a>
             <a className="transition hover:text-amber-300" href="#bom">BOM</a>
             <a className="transition hover:text-amber-300" href="#hardware">Hardware</a>
+            <a className="transition hover:text-amber-300" href="/guides">Guides</a>
           </nav>
           <div className="hidden items-center gap-3 sm:flex">
             <button onClick={shareBuild} className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-300 transition hover:border-amber-400/40 hover:text-amber-300">
@@ -1249,6 +1250,7 @@ export default function Page() {
           <span>VanSpark 12V Pro · For guidance only. Always verify with a qualified installer.</span>
           <span className="flex items-center gap-2"><CircleHelp className="size-3.5" /> Calculations use nominal 12V values</span>
           <span className="flex items-center gap-4">
+            <a href="/guides" className="transition hover:text-slate-400">Guides</a>
             <a href="/privacy" className="transition hover:text-slate-400">Privacy</a>
             <a href="/terms" className="transition hover:text-slate-400">Terms</a>
           </span>
