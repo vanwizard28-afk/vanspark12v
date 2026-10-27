@@ -1,9 +1,12 @@
 import Script from 'next/script'
 
-// Loads Google tag (gtag.js) only when NEXT_PUBLIC_GA_ID is configured —
-// works for both GA4 measurement and Google Ads conversion tags (AW-…).
+// Loads Google tag (gtag.js) — works for both GA4 measurement and Google
+// Ads conversion tags (AW-…). NEXT_PUBLIC_GA_ID overrides the default so
+// the same component can serve other properties without a code change.
+const DEFAULT_GA_ID = 'AW-18534450546'
+
 export default function Analytics() {
-  const id = process.env.NEXT_PUBLIC_GA_ID
+  const id = process.env.NEXT_PUBLIC_GA_ID ?? DEFAULT_GA_ID
   if (!id) return null
   return (
     <>
