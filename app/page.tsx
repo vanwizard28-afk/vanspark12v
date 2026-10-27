@@ -39,6 +39,7 @@ import {
   selectCable,
   sizeSystem,
   INVERTER_RUN_M,
+  SOLAR_DERATE,
   type Appliance,
 } from '@/lib/electrical'
 import {
@@ -334,6 +335,25 @@ export default function Page() {
   const batteryUnits = Math.max(1, Math.ceil(totals.batteryAh / 100))
   const solarPanels = Math.max(1, Math.ceil(totals.solarW / 200))
   const hasAc = state.appliances.some((a) => a.active && a.ac)
+
+  // Seasonal energy balance: real-world array yield (solarW was sized WITH a
+  // 30% derate, so divide it back out) vs daily demand at each season's sun hours.
+  const solarYieldWh = (sunH: number) => (totals.solarW / SOLAR_DERATE) * sunH
+  const energyBalance = [
+    { name: 'Summer', sunHours: 4.8 },
+    { name: 'Spring / Autumn', sunHours: 3.2 },
+    { name: 'Winter', sunHours: 1.5 },
+  ].map((s) => ({ ...s, coverage: totals.dailyWh > 0 ? (solarYieldWh(s.sunHours) / totals.dailyWh) * 100 : 0 }))
+  const winter = energyBalance[2]
+  const usableWh = totals.batteryAh * (state.chemistry === 'LiFePO4' ? 0.8 : 0.5) * 12
+  const winterDeficit = Math.max(0, totals.dailyWh - solarYieldWh(winter.sunHours))
+  const bufferDays = winterDeficit > 0 ? usableWh / winterDeficit : 0
+  const energyVerdict =
+    totals.dailyWh <= 0
+      ? 'Add some loads above to see how your seasons stack up.'
+      : winter.coverage >= 100
+        ? 'Your array covers daily demand even in midwinter — genuinely self-sufficient all year on solar alone.'
+        : `Winter solar covers ${Math.round(winter.coverage)}% of your daily use — the bank buffers ~${bufferDays.toFixed(1)} days before you need alternator driving or shore hookup. Summer is self-sufficient.`
 
   type BomVariant = { spec?: string; guide: [number, number]; shop: RetailerKey }
   type BomRow = { item: string; spec: string; qtyN: number; guide: [number, number]; shop: RetailerKey; mid?: BomVariant; budget?: BomVariant }
@@ -726,6 +746,32 @@ export default function Page() {
               <h3 className="mt-3 text-sm font-semibold text-white">Shore power</h3>
               <p className="mt-1 text-xs leading-5 text-slate-500">A mains charger and RCD-protected hookup provide a reliable parked-up top-up.</p>
             </div>
+          </div>
+          {/* Daily energy balance — solar coverage by season */}
+          <div className="mt-5 rounded-xl border border-white/[0.07] bg-slate-950/30 p-5">
+            <div className="flex items-center justify-between">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Daily energy balance — can your solar keep up?</p>
+              <span className="text-[10px] text-slate-500">{Math.round(totals.dailyWh)} Wh/day demand</span>
+            </div>
+            <div className="mt-4 space-y-2.5">
+              {energyBalance.map((s) => (
+                <div key={s.name} className="flex items-center gap-3">
+                  <span className="w-24 shrink-0 text-[10px] font-medium text-slate-400">{s.name}</span>
+                  <div className="relative h-4 flex-1 rounded-full bg-slate-800/80">
+                    <div
+                      className={`h-full rounded-full transition-all ${s.coverage >= 100 ? 'bg-emerald-400' : s.coverage >= 60 ? 'bg-amber-400' : 'bg-red-400/80'}`}
+                      style={{ width: `${Math.min(100, s.coverage)}%` }}
+                    />
+                    <span className="absolute inset-y-0 left-full ml-0 w-px bg-white/40" style={{ left: '100%' }} />
+                  </div>
+                  <span className={`w-24 shrink-0 text-right text-[10px] font-bold ${s.coverage >= 100 ? 'text-emerald-300' : s.coverage >= 60 ? 'text-amber-300' : 'text-red-300'}`}>
+                    {Math.round(s.coverage)}% {s.coverage >= 100 ? '· covered' : '· deficit'}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <p className="mt-4 text-[11px] leading-4 text-slate-400">{energyVerdict}</p>
+            <p className="mt-1.5 text-[10px] text-slate-600">Assumes real-world derated yield. As a rule of thumb, 1 hour of driving adds ~360Wh via the 30A DC-DC, and shore hookup refills the bank overnight.</p>
           </div>
         </section>
 
