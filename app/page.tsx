@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import {
   ArrowRight,
   BatteryCharging,
@@ -178,6 +178,7 @@ export default function Page() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [blueprintOpen, setBlueprintOpen] = useState(false)
   const [downloading, setDownloading] = useState(false)
+  const purchaseHandled = useRef(false)
 
   const [newName, setNewName] = useState('')
   const [newPower, setNewPower] = useState('')
@@ -189,19 +190,37 @@ export default function Page() {
 
   // Restore the build from a shared URL (?build=...) or localStorage once on mount.
   useEffect(() => {
-    const fromUrl = new URLSearchParams(window.location.search).get(URL_PARAM)
+    const params = new URLSearchParams(window.location.search)
+    const fromUrl = params.get(URL_PARAM)
     const decoded = fromUrl ? decodeState(fromUrl) : null
+    let restored: BuildState | null = decoded
     if (decoded) {
       setState(decoded)
     } else {
       try {
         const saved = localStorage.getItem(STORAGE_KEY)
-        if (saved) setState(sanitizeState(JSON.parse(saved)))
+        if (saved) {
+          restored = sanitizeState(JSON.parse(saved))
+          setState(restored)
+        }
       } catch {
         // corrupted storage — fall back to defaults
       }
     }
     setHydrated(true)
+
+    // Returning from Stripe: deliver the paid blueprint automatically so a
+    // paying customer never lands back on the calculator empty-handed.
+    const purchase = params.get('purchase')
+    if (purchase === 'success' && !purchaseHandled.current) {
+      purchaseHandled.current = true
+      const paid = restored ?? DEFAULT_STATE
+      downloadBlueprint(paid, sizeSystem(paid))
+        .then(() => trackEvent('purchase', { value: 7.99, currency: 'GBP' }))
+        .catch(() => {})
+    } else if (purchase === 'cancelled') {
+      setBlueprintOpen(true)
+    }
   }, [])
 
   // Persist every change to the URL (shareable) and localStorage (refresh-safe).

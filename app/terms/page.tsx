@@ -29,7 +29,7 @@ const sections: [string, string][] = [
   ],
   [
     'Contact',
-    'support@vanspark.example — update this address before launch.',
+    'support@vanspark.co.uk',
   ],
 ]
 
