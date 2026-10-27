@@ -251,6 +251,18 @@ export default function Page() {
   const toggleAppliance = (id: string) =>
     setState((s) => ({ ...s, appliances: s.appliances.map((a) => (a.id === id ? { ...a, active: !a.active } : a)) }))
 
+  // Editable daily runtime per appliance — snap to 0.5h on steppers,
+  // free-type on the input, always clamped to 0.5–24h.
+  const setApplianceHours = (id: string, hours: number, snap = false) =>
+    setState((s) => ({
+      ...s,
+      appliances: s.appliances.map((a) => {
+        if (a.id !== id || !Number.isFinite(hours)) return a
+        const snapped = snap ? Math.round(hours * 2) / 2 : hours
+        return { ...a, hours: Math.min(24, Math.max(0.5, snapped)) }
+      }),
+    }))
+
   const removeAppliance = (id: string) =>
     setState((s) => ({ ...s, appliances: s.appliances.filter((a) => a.id !== id) }))
 
@@ -477,10 +489,33 @@ export default function Page() {
                         onClick={() => removeAppliance(item.id)}
                         title={`Remove ${item.name}`}
                         aria-label={`Remove ${item.name}`}
-                        className="absolute -right-1.5 -top-1.5 grid size-5 place-items-center rounded-full border border-white/10 bg-slate-800 text-slate-400 transition hover:border-red-400/40 hover:bg-red-400/20 hover:text-red-300"
+                        className="absolute -right-1.5 -top-1.5 z-10 grid size-5 place-items-center rounded-full border border-white/10 bg-slate-800 text-slate-400 transition hover:border-red-400/40 hover:bg-red-400/20 hover:text-red-300"
                       >
                         <Trash2 className="size-3" />
                       </button>
+                    )}
+                    {item.active && (
+                      <div className="mt-1.5 flex items-center gap-1.5 rounded-lg border border-amber-400/15 bg-slate-950/40 px-2 py-1.5">
+                        <span className="text-[9px] font-bold uppercase tracking-wider text-slate-500">hrs/day</span>
+                        <button
+                          onClick={() => setApplianceHours(item.id, item.hours - 0.5, true)}
+                          aria-label={`Decrease ${item.name} hours`}
+                          className="grid size-5 place-items-center rounded border border-white/10 text-xs text-slate-400 transition hover:border-amber-400/40 hover:text-amber-300"
+                        >−</button>
+                        <input
+                          value={item.hours}
+                          onChange={(e) => setApplianceHours(item.id, Number(e.target.value))}
+                          inputMode="decimal"
+                          aria-label={`${item.name} hours per day`}
+                          className="w-10 rounded bg-transparent text-center text-xs font-semibold text-slate-200 outline-none focus:bg-slate-800"
+                        />
+                        <button
+                          onClick={() => setApplianceHours(item.id, item.hours + 0.5, true)}
+                          aria-label={`Increase ${item.name} hours`}
+                          className="grid size-5 place-items-center rounded border border-white/10 text-xs text-slate-400 transition hover:border-amber-400/40 hover:text-amber-300"
+                        >+</button>
+                        <span className="ml-auto text-[9px] font-medium text-amber-300/80">{Math.round(item.watts * item.hours)} Wh</span>
+                      </div>
                     )}
                   </div>
                 )

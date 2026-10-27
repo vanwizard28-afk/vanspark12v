@@ -95,6 +95,7 @@ export function sanitizeState(raw: unknown): BuildState {
 type CompactState = {
   v: 2
   on?: number                  // bitmask of active preset appliances
+  ph?: [number, number][]      // [presetIndex, hours] for presets whose runtime was edited
   cu?: [string, number, number, number, number][] // [name, watts, hours, active, ac]
   a?: number
   c?: number
@@ -112,6 +113,8 @@ export function encodeState(state: BuildState): string {
   const presets = state.appliances.filter((a) => !a.custom)
   const mask = presets.reduce((m, a, i) => m | (a.active ? 1 << i : 0), 0)
   if (mask !== PRESET_APPLIANCES.reduce((m, a, i) => m | (a.active ? 1 << i : 0), 0)) diff.on = mask
+  const editedHours = presets.map((a, i) => [i, a.hours] as [number, number]).filter(([i, h]) => h !== PRESET_APPLIANCES[i].hours)
+  if (editedHours.length) diff.ph = editedHours
   const customs = state.appliances.filter((a) => a.custom)
   if (customs.length) diff.cu = customs.map((a) => [a.name, a.watts, a.hours, a.active ? 1 : 0, a.ac ? 1 : 0])
   if (state.autonomy !== DEFAULT_STATE.autonomy) diff.a = state.autonomy
@@ -130,7 +133,12 @@ export function encodeState(state: BuildState): string {
 }
 
 function decodeCompact(raw: CompactState): BuildState {
-  const appliances = PRESET_APPLIANCES.map((a, i) => ({ ...a, active: raw.on === undefined ? a.active : Boolean(raw.on! & (1 << i)) }))
+  const hourEdits = new Map((raw.ph ?? []).filter(([i, h]) => Number.isInteger(i) && typeof h === 'number'))
+  const appliances = PRESET_APPLIANCES.map((a, i) => ({
+    ...a,
+    active: raw.on === undefined ? a.active : Boolean(raw.on! & (1 << i)),
+    hours: hourEdits.get(i) ?? a.hours,
+  }))
   for (const c of (raw.cu ?? []).slice(0, 40)) {
     const [name, watts, hours, active, ac] = c
     if (typeof name !== 'string' || !name.trim()) continue
