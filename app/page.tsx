@@ -298,11 +298,7 @@ export default function Page() {
     setCheckoutError(false)
     trackEvent('blueprint_click', { daily_wh: Math.round(totals.dailyWh), inverter_w: totals.inverterW })
     try {
-      const res = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ build: encodeState(state) }),
-      })
+      const res = await fetch('/api/checkout', { method: 'POST' })
       const { url } = await res.json().catch(() => ({}))
       if (res.ok && url) {
         window.location.href = url
