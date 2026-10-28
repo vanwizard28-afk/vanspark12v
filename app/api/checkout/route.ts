@@ -4,8 +4,10 @@ import { NextRequest, NextResponse } from 'next/server'
 // blueprint. Until STRIPE_SECRET_KEY + STRIPE_PRICE_ID are configured the
 // route returns 503 and the client shows an error instead of the PDF.
 export async function POST(req: NextRequest) {
-  const secretKey = process.env.STRIPE_SECRET_KEY
-  const priceId = process.env.STRIPE_PRICE_ID
+  // Trim — a trailing space/newline pasted into the Vercel env var silently
+  // breaks Stripe auth.
+  const secretKey = process.env.STRIPE_SECRET_KEY?.trim()
+  const priceId = process.env.STRIPE_PRICE_ID?.trim()
 
   if (!secretKey || !priceId) {
     return NextResponse.json({ error: 'checkout_not_configured' }, { status: 503 })
@@ -33,6 +35,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ url: session.url })
   } catch (err) {
     console.error('Stripe checkout failed:', err)
-    return NextResponse.json({ error: 'checkout_failed' }, { status: 500 })
+    // Surface Stripe's error type/code so misconfiguration is diagnosable
+    // from the response without digging through function logs.
+    const e = err as { type?: string; code?: string }
+    return NextResponse.json({ error: 'checkout_failed', reason: e.code ?? e.type ?? 'unknown' }, { status: 500 })
   }
 }
