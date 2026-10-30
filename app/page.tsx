@@ -1134,8 +1134,8 @@ export default function Page() {
         {guideId && <ComponentGuide id={guideId} onClose={() => setGuideId(null)} />}
 
         {blueprintOpen && (
-          <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/80 p-5 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="blueprint-title">
-            <div className="w-full max-w-lg rounded-2xl border border-amber-400/25 bg-[#111822] p-6 shadow-2xl">
+          <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/80 p-5 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="blueprint-title" onClick={() => setBlueprintOpen(false)}>
+            <div className="max-h-[90vh] max-h-[90dvh] w-full max-w-lg overflow-y-auto rounded-2xl border border-amber-400/25 bg-[#111822] p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
               <div className="flex items-start justify-between">
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-[.18em] text-amber-400">Blueprint preview</p>
