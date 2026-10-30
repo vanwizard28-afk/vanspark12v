@@ -1291,6 +1291,25 @@ export default function Page() {
             <a href="/terms" className="transition hover:text-slate-400">Terms</a>
           </span>
         </footer>
+
+        <section className="mt-10 rounded-2xl border border-emerald-400/25 bg-gradient-to-br from-emerald-400/[0.08] to-[#111822] p-6">
+          <div className="flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-center">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[.18em] text-emerald-400">From the same maker</p>
+              <h2 className="mt-2 text-lg font-semibold text-white">Into mountain biking? Then check this out.</h2>
+              <p className="mt-2 max-w-xl text-xs leading-5 text-slate-400">Explore 3D interactive satellite terrain mapping, GPS tracking, and offline routes across the Peak District.</p>
+            </div>
+            <a
+              href="https://apextrails.co.uk"
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => trackEvent('cross_promo_click', { target: 'apex_trails' })}
+              className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-emerald-400 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-emerald-300"
+            >
+              Visit Apex Trails <ArrowRight className="size-4" />
+            </a>
+          </div>
+        </section>
       </div>
     </main>
   )
