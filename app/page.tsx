@@ -1143,6 +1143,23 @@ export default function Page() {
                 </div>
                 <button onClick={() => setBlueprintOpen(false)} className="rounded-lg p-2 text-slate-400 hover:bg-slate-800 hover:text-white" aria-label="Close preview"><X /></button>
               </div>
+              {/* Live excerpt — rendered from their actual build so the preview
+                  proves the document is generated, not a stock template. */}
+              <div className="relative mt-5 overflow-hidden rounded-xl border border-white/[0.08] bg-white p-4 text-slate-800">
+                <div className="pointer-events-none absolute inset-0 grid place-items-center">
+                  <span className="rotate-[-16deg] text-4xl font-black tracking-[.3em] text-slate-900/[0.06]">SAMPLE</span>
+                </div>
+                <p className="text-[9px] font-bold uppercase tracking-[.2em] text-slate-400">VanSpark 12V Pro — Build Blueprint</p>
+                <p className="mt-1 text-xs font-bold">System schedule · {state.season}</p>
+                <div className="mt-2 space-y-1 font-mono text-[10px] leading-4 text-slate-600">
+                  <p>Battery bank ....... {totals.batteryAh}Ah {state.chemistry}</p>
+                  <p>Solar array ........ {totals.solarW}W → {totals.mpptA}A MPPT</p>
+                  {totals.inverterW > 0 && <p>Inverter ............ {totals.inverterW}W pure sine</p>}
+                  <p>Main cable ......... {totals.mainCable.size}mm² · {totals.mainFuseA}A MEGA fuse</p>
+                  <p>Branch circuits .... {totals.branches.length} fused runs</p>
+                </div>
+                <p className="mt-2 border-t border-slate-200 pt-1.5 text-[8px] leading-3 text-slate-400">Live excerpt from your build — the full PDF includes the wiring schematic, complete fuse/cable schedule and compliance checklist.</p>
+              </div>
               <div className="mt-5 rounded-xl border border-white/[0.08] bg-slate-950/50 p-5">
                 <div className="flex items-center gap-3">
                   <div className="grid size-10 place-items-center rounded-lg bg-amber-400 text-slate-950"><ShoppingCart className="size-5" /></div>
