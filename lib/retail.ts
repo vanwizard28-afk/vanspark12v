@@ -7,7 +7,7 @@ import { trackEvent } from './analytics'
 export const RETAILERS = {
   fogstar: { name: 'Fogstar', href: 'https://www.fogstar.co.uk/search?q=drift+lifepo4' },
   renogy: { name: 'Renogy UK', href: 'https://uk.renogy.com/search?q=lifepo4' },
-  victron: { name: 'Victron dealer', href: 'https://www.victronenergy.com/' },
+  victron: { name: 'Victron dealer', href: 'https://www.12voltplanet.co.uk/victron.html' },
   ecoworthy: { name: 'Eco-Worthy', href: 'https://uk.eco-worthy.com/search?q=lifepo4' },
   '12vp': { name: '12 Volt Planet', href: 'https://www.12voltplanet.co.uk/' },
   screwfix: { name: 'Screwfix', href: 'https://www.screwfix.com/' },
@@ -18,12 +18,25 @@ export type RetailerKey = keyof typeof RETAILERS
 
 const AMAZON_ASSOCIATE_TAG = 'vanspark21-20'
 
+// Per-domain affiliate params, injected automatically into every outbound
+// link. Add your ID when each program approves you — same pattern as Amazon.
+const AFFILIATE_TAGS: Record<string, string> = {
+  'amazon.co.uk': `tag=${AMAZON_ASSOCIATE_TAG}`,
+  // 'uk.renogy.com': 'aff=YOUR_RENOGY_ID',
+  // 'fogstar.co.uk': 'ref=YOUR_FOGSTAR_CODE',
+  // 'uk.eco-worthy.com': 'ref=YOUR_ECOWORTHY_ID',
+  // '12voltplanet.co.uk': 'aff=YOUR_12VP_ID',
+}
+
 export function withUtm(href: string, campaign: string) {
   let url = href
-  // Amazon Associates: the tag= param is what attributes the commission —
-  // every outbound amazon.co.uk link gets it automatically.
-  if (url.includes('amazon.co.uk') && !url.includes('tag=')) {
-    url += `${url.includes('?') ? '&' : '?'}tag=${AMAZON_ASSOCIATE_TAG}`
+  // Affiliate params attribute the commission — appended automatically so
+  // every BOM row and hardware card inherits them with no per-link work.
+  for (const [domain, param] of Object.entries(AFFILIATE_TAGS)) {
+    const key = param.split('=')[0]
+    if (url.includes(domain) && !url.includes(`${key}=`)) {
+      url += `${url.includes('?') ? '&' : '?'}${param}`
+    }
   }
   return `${url}${url.includes('?') ? '&' : '?'}utm_source=vanspark&utm_medium=affiliate&utm_campaign=${campaign}`
 }
