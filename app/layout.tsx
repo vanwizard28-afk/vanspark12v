@@ -9,14 +9,14 @@ export const metadata: Metadata = {
   description: 'Size your campervan 12V power system with live load, battery, solar, inverter, and cable calculations.',
   openGraph: {
     title: 'VanSpark 12V Pro | Campervan Electrical Design',
-    description: 'Size your campervan 12V system — battery, solar, inverter, cable and fuse schedules — with live BS 7671 aware calculations.',
+    description: 'Size your campervan 12V system — battery, solar, inverter, cable and fuse schedules — with live standards-aware calculations.',
     type: 'website',
     siteName: 'VanSpark 12V Pro',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'VanSpark 12V Pro | Campervan Electrical Design',
-    description: 'Size your campervan 12V system with live BS 7671 aware calculations.',
+    description: 'Size your campervan 12V system with live standards-aware calculations.',
   },
   icons: {
     icon: [

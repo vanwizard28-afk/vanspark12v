@@ -2,12 +2,13 @@ import { trackEvent } from './analytics'
 
 // Affiliate plumbing: every outbound shopping link carries UTM tags for
 // analytics attribution and a click event so you can measure CTR per item.
-// When you join a program, swap these URLs for your tagged affiliate links.
+// BOM rows and hardware cards carry their own deep links; these storefront
+// URLs are the fallback. When you join a program, swap in tagged URLs.
 export const RETAILERS = {
-  fogstar: { name: 'Fogstar', href: 'https://www.fogstar.co.uk/collections/fogstar-drift' },
-  renogy: { name: 'Renogy UK', href: 'https://uk.renogy.com/' },
+  fogstar: { name: 'Fogstar', href: 'https://www.fogstar.co.uk/search?q=drift+lifepo4' },
+  renogy: { name: 'Renogy UK', href: 'https://uk.renogy.com/search?q=lifepo4' },
   victron: { name: 'Victron dealer', href: 'https://www.victronenergy.com/' },
-  ecoworthy: { name: 'Eco-Worthy', href: 'https://uk.eco-worthy.com/' },
+  ecoworthy: { name: 'Eco-Worthy', href: 'https://uk.eco-worthy.com/search?q=lifepo4' },
   '12vp': { name: '12 Volt Planet', href: 'https://www.12voltplanet.co.uk/' },
   screwfix: { name: 'Screwfix', href: 'https://www.screwfix.com/' },
   amazon: { name: 'Amazon UK', href: 'https://www.amazon.co.uk/' },

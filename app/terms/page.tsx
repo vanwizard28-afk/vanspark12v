@@ -13,7 +13,7 @@ const sections: [string, string][] = [
   ],
   [
     'Limitation of liability',
-    'To the fullest extent permitted by UK law, we accept no liability for loss, damage, injury, or non-compliance arising from use of this tool or its generated documents. Electrical work in vehicles must comply with applicable regulations including BS 7671 section 721.',
+    'To the fullest extent permitted by UK law, we accept no liability for loss, damage, injury, or non-compliance arising from use of this tool or its generated documents. Electrical work in vehicles must comply with applicable standards — BS EN 1648-1 / ISO 10133 for extra-low voltage 12V DC systems and BS 7671 Section 721 for 230V AC hookup circuits.',
   ],
   [
     'Digital product purchases',

@@ -101,42 +101,42 @@ const cableReferenceRows = [
 ]
 
 const hardwarePremium = [
-  { name: 'Fogstar Drift Heated LiFePO4', spec: '105Ah · built-in heater', type: 'BATTERY', href: 'https://www.fogstar.co.uk/collections/fogstar-drift' },
-  { name: 'Aluminium Z-Brackets', spec: 'Universal · 4-piece set', type: 'SOLAR & ROOF', href: 'https://www.12voltplanet.co.uk/' },
-  { name: 'Flexible Solar Panel', spec: '100W · low-profile option', type: 'SOLAR & ROOF', href: 'https://www.12voltplanet.co.uk/' },
-  { name: 'IP68 Roof Entry Gland', spec: 'Twin cable · UV stable', type: 'SOLAR & ROOF', href: 'https://www.12voltplanet.co.uk/' },
+  { name: 'Fogstar Drift Heated LiFePO4', spec: '105Ah · built-in heater', type: 'BATTERY', href: 'https://www.fogstar.co.uk/search?q=drift+lifepo4' },
+  { name: 'Aluminium Z-Brackets', spec: 'Universal · 4-piece set', type: 'SOLAR & ROOF', href: 'https://www.12voltplanet.co.uk/solar-power.html' },
+  { name: 'Flexible Solar Panel', spec: '100W · low-profile option', type: 'SOLAR & ROOF', href: 'https://www.12voltplanet.co.uk/solar-power.html' },
+  { name: 'IP68 Roof Entry Gland', spec: 'Twin cable · UV stable', type: 'SOLAR & ROOF', href: 'https://www.12voltplanet.co.uk/solar-power.html' },
   { name: 'Victron SmartSolar MPPT', spec: '75/15 · Bluetooth', type: 'CHARGING', href: 'https://www.victronenergy.com/solar-charge-controllers' },
   { name: 'Victron Orion-Tr Smart DC-DC', spec: '30A · isolated', type: 'CHARGING', href: 'https://www.victronenergy.com/dc-dc-converters/orion-tr-smart' },
   { name: 'Victron Phoenix Inverter', spec: 'Pure sine · heavy-load ready', type: 'INVERTER', href: 'https://www.victronenergy.com/inverters-chargers' },
   { name: 'Blue Sea Systems Fuse Block', spec: 'MIDI / MEGA compatible', type: 'SAFETY & DISTRIBUTION', href: 'https://www.bluesea.com/products/category/BusBars' },
-  { name: 'MIDI / MEGA Heavy-Duty Fuses', spec: 'High-current circuit protection', type: 'SAFETY & DISTRIBUTION', href: 'https://www.12voltplanet.co.uk/' },
-  { name: 'Battery Isolator Switch', spec: 'Continuous-duty master cut-off', type: 'SAFETY & DISTRIBUTION', href: 'https://www.12voltplanet.co.uk/' },
-  { name: 'Tri-Rated Copper Cables', spec: '16 · 25 · 35 · 50mm²', type: 'CABLING', href: 'https://www.12voltplanet.co.uk/' },
-  { name: 'Tinned Marine Copper Lugs', spec: 'Crimp terminals · corrosion resistant', type: 'CABLING', href: 'https://www.12voltplanet.co.uk/' },
+  { name: 'MIDI / MEGA Heavy-Duty Fuses', spec: 'High-current circuit protection', type: 'SAFETY & DISTRIBUTION', href: 'https://www.12voltplanet.co.uk/power-distribution.html' },
+  { name: 'Battery Isolator Switch', spec: 'Continuous-duty master cut-off', type: 'SAFETY & DISTRIBUTION', href: 'https://www.12voltplanet.co.uk/power-distribution.html' },
+  { name: 'Tri-Rated Copper Cables', spec: '16 · 25 · 35 · 50mm²', type: 'CABLING', href: 'https://www.12voltplanet.co.uk/cable.html' },
+  { name: 'Tinned Marine Copper Lugs', spec: 'Crimp terminals · corrosion resistant', type: 'CABLING', href: 'https://www.12voltplanet.co.uk/terminals-connectors.html' },
   { name: '12 Volt Planet', spec: 'Best for wiring, terminals & marine accessories', type: 'UK SUPPLIER', href: 'https://www.12voltplanet.co.uk/' },
   { name: 'Fogstar / Fogstar Drift', spec: 'UK heated LiFePO4 specialists', type: 'UK SUPPLIER', href: 'https://www.fogstar.co.uk/' },
   { name: 'Van Junkies / Wired Campers', spec: 'Victron gear & complete off-grid kits', type: 'UK SUPPLIER', href: 'https://vanjunkies.co.uk/' },
 ]
 
 const hardwareMid = [
-  { name: 'Renogy Core LiFePO4 Battery', spec: '100Ah · 12.8V · Bluetooth option', type: 'BATTERY', href: 'https://uk.renogy.com/' },
-  { name: 'Renogy 200W Solar Kit', spec: 'Rigid mono · MC4 leads + brackets', type: 'SOLAR & ROOF', href: 'https://uk.renogy.com/solar-panels/' },
-  { name: 'Renogy Rover MPPT', spec: '40A · LCD + Bluetooth', type: 'CHARGING', href: 'https://uk.renogy.com/' },
-  { name: 'Renogy DCC30S DC-DC', spec: '30A · MPPT dual input', type: 'CHARGING', href: 'https://uk.renogy.com/' },
-  { name: 'Renogy Pure Sine Inverter', spec: '2000W · 12V · induction-ready', type: 'INVERTER', href: 'https://uk.renogy.com/' },
-  { name: 'Renogy 500A Battery Monitor', spec: 'Shunt-based · 2.4in display', type: 'MONITORING', href: 'https://uk.renogy.com/' },
+  { name: 'Renogy Core LiFePO4 Battery', spec: '100Ah · 12.8V · Bluetooth option', type: 'BATTERY', href: 'https://uk.renogy.com/search?q=100ah+core+lifepo4' },
+  { name: 'Renogy 200W Solar Kit', spec: 'Rigid mono · MC4 leads + brackets', type: 'SOLAR & ROOF', href: 'https://uk.renogy.com/search?q=200w+solar+kit' },
+  { name: 'Renogy Rover MPPT', spec: '40A · LCD + Bluetooth', type: 'CHARGING', href: 'https://uk.renogy.com/search?q=rover+mppt' },
+  { name: 'Renogy DCC30S DC-DC', spec: '30A · MPPT dual input', type: 'CHARGING', href: 'https://uk.renogy.com/search?q=dcc30s' },
+  { name: 'Renogy Pure Sine Inverter', spec: '2000W · 12V · induction-ready', type: 'INVERTER', href: 'https://uk.renogy.com/search?q=2000w+pure+sine+inverter' },
+  { name: 'Renogy 500A Battery Monitor', spec: 'Shunt-based · 2.4in display', type: 'MONITORING', href: 'https://uk.renogy.com/search?q=battery+monitor' },
 ]
 
 const hardwareBudget = [
-  { name: 'Eco-Worthy LiFePO4 Battery', spec: '100Ah · 12.8V · budget pick', type: 'BATTERY', href: 'https://uk.eco-worthy.com/' },
-  { name: 'Eco-Worthy Pure Sine Inverter', spec: '2000W · 12V · budget pick', type: 'INVERTER', href: 'https://uk.eco-worthy.com/' },
-  { name: 'Eco-Worthy Solar Panel Kit', spec: '195W mono · mounts included', type: 'SOLAR & ROOF', href: 'https://uk.eco-worthy.com/' },
-  { name: 'Generic MPPT Controller', spec: '30–40A · budget class', type: 'CHARGING', href: 'https://www.amazon.co.uk/' },
-  { name: 'Budget DC-DC Charger', spec: '20–40A · battery-to-battery', type: 'CHARGING', href: 'https://uk.eco-worthy.com/' },
-  { name: 'Generic Battery Monitor', spec: 'Shunt + LCD display', type: 'MONITORING', href: 'https://www.amazon.co.uk/' },
-  { name: 'Welding Cable 35–70mm²', spec: 'Heavy inverter feed · cut to length', type: 'CABLING', href: 'https://www.12voltplanet.co.uk/' },
-  { name: 'MEGA / MIDI Fuse + Holder Kit', spec: '80–400A · high-current', type: 'SAFETY & DISTRIBUTION', href: 'https://www.amazon.co.uk/' },
-  { name: 'Heavy-Duty Isolator Switch', spec: '275A continuous rating', type: 'SAFETY & DISTRIBUTION', href: 'https://www.amazon.co.uk/' },
+  { name: 'Eco-Worthy LiFePO4 Battery', spec: '100Ah · 12.8V · budget pick', type: 'BATTERY', href: 'https://uk.eco-worthy.com/search?q=100ah+lifepo4+battery' },
+  { name: 'Eco-Worthy Pure Sine Inverter', spec: '2000W · 12V · budget pick', type: 'INVERTER', href: 'https://uk.eco-worthy.com/search?q=2000w+inverter' },
+  { name: 'Eco-Worthy Solar Panel Kit', spec: '195W mono · mounts included', type: 'SOLAR & ROOF', href: 'https://uk.eco-worthy.com/search?q=solar+panel+kit' },
+  { name: 'Generic MPPT Controller', spec: '30–40A · budget class', type: 'CHARGING', href: 'https://www.amazon.co.uk/s?k=mppt+solar+charge+controller+40a' },
+  { name: 'Budget DC-DC Charger', spec: '20–40A · battery-to-battery', type: 'CHARGING', href: 'https://uk.eco-worthy.com/search?q=dc+to+dc+charger' },
+  { name: 'Generic Battery Monitor', spec: 'Shunt + LCD display', type: 'MONITORING', href: 'https://www.amazon.co.uk/s?k=battery+monitor+shunt' },
+  { name: 'Welding Cable 35–70mm²', spec: 'Heavy inverter feed · cut to length', type: 'CABLING', href: 'https://www.12voltplanet.co.uk/cable.html' },
+  { name: 'MEGA / MIDI Fuse + Holder Kit', spec: '80–400A · high-current', type: 'SAFETY & DISTRIBUTION', href: 'https://www.amazon.co.uk/s?k=mega+fuse+holder+kit' },
+  { name: 'Heavy-Duty Isolator Switch', spec: '275A continuous rating', type: 'SAFETY & DISTRIBUTION', href: 'https://www.amazon.co.uk/s?k=battery+isolator+switch+275a' },
 ]
 
 const CIRCUIT_PROFILES: Record<string, { amps: number; fuse: number; minWire: number }> = {
@@ -353,32 +353,32 @@ export default function Page() {
         ? 'Your array covers daily demand even in midwinter — genuinely self-sufficient all year on solar alone.'
         : `Winter solar covers ${Math.round(winter.coverage)}% of your daily use — the bank buffers ~${bufferDays.toFixed(1)} days before you need alternator driving or shore hookup. Summer is self-sufficient.`
 
-  type BomVariant = { spec?: string; guide: [number, number]; shop: RetailerKey }
-  type BomRow = { item: string; spec: string; qtyN: number; guide: [number, number]; shop: RetailerKey; mid?: BomVariant; budget?: BomVariant }
+  type BomVariant = { spec?: string; guide: [number, number]; shop: RetailerKey; href?: string }
+  type BomRow = { item: string; spec: string; qtyN: number; guide: [number, number]; shop: RetailerKey; href?: string; mid?: BomVariant; budget?: BomVariant }
   const coreRows: BomRow[] = [
-    { item: 'Leisure battery', spec: `${state.chemistry} · Fogstar Drift · ${batteryUnits}× 100Ah`, qtyN: batteryUnits, guide: [250, 450], shop: 'fogstar',
-      mid: { spec: `${state.chemistry} · Renogy Core · ${batteryUnits}× 100Ah`, guide: [200, 380], shop: 'renogy' },
-      budget: { spec: `${state.chemistry} · Eco-Worthy · ${batteryUnits}× 100Ah`, guide: [160, 300], shop: 'ecoworthy' } },
-    { item: 'Solar panels', spec: `Victron BlueSolar rigid · ${solarPanels}× 215W`, qtyN: solarPanels, guide: [110, 190], shop: 'victron',
-      mid: { spec: `Renogy rigid mono · MC4 · ${solarPanels}× 200W`, guide: [90, 160], shop: 'renogy' },
-      budget: { spec: `Eco-Worthy rigid mono · ${solarPanels}× 195W`, guide: [65, 110], shop: 'ecoworthy' } },
-    { item: 'MPPT controller', spec: `Victron SmartSolar · ${totals.mpptA}A`, qtyN: 1, guide: [60, 140], shop: 'victron',
-      mid: { spec: `Renogy Rover · ${totals.mpptA}A`, guide: [45, 90], shop: 'renogy' },
-      budget: { spec: `Generic MPPT · ${totals.mpptA}A`, guide: [30, 70], shop: 'amazon' } },
-    ...(totals.inverterW > 0 ? [{ item: 'Pure sine inverter', spec: `Victron Phoenix class · ${totals.inverterW}W`, qtyN: 1, guide: [Math.round(totals.inverterW * 0.2), Math.round(totals.inverterW * 0.35)] as [number, number], shop: 'victron' as RetailerKey,
-      mid: { spec: `Renogy pure sine · ${totals.inverterW}W`, guide: [Math.round(totals.inverterW * 0.12), Math.round(totals.inverterW * 0.25)] as [number, number], shop: 'renogy' as RetailerKey },
-      budget: { spec: `Eco-Worthy pure sine · ${totals.inverterW}W`, guide: [Math.round(totals.inverterW * 0.07), Math.round(totals.inverterW * 0.16)] as [number, number], shop: 'ecoworthy' as RetailerKey } }] : []),
-    { item: 'DC-DC charger', spec: 'Victron Orion-Tr Smart · 30A', qtyN: 1, guide: [130, 230], shop: 'victron',
-      mid: { spec: 'Renogy DCC30S · 30A', guide: [90, 160], shop: 'renogy' },
-      budget: { spec: 'Eco-Worthy DC-DC · 20A', guide: [65, 130], shop: 'ecoworthy' } },
-    { item: 'Mains charger', spec: 'Victron Blue Smart IP65 · 12/25', qtyN: 1, guide: [110, 190], shop: 'victron',
-      mid: { spec: 'Smart mains charger · 20A', guide: [60, 110], shop: '12vp' },
-      budget: { spec: 'Generic smart charger · 20A', guide: [40, 85], shop: 'amazon' } },
-    { item: 'Battery monitor', spec: 'Victron SmartShunt · 500A', qtyN: 1, guide: [90, 130], shop: 'victron',
-      mid: { spec: 'Renogy 500A shunt monitor', guide: [50, 90], shop: 'renogy' },
-      budget: { spec: 'Generic LCD shunt monitor', guide: [25, 55], shop: 'amazon' } },
-    { item: 'Isolator + busbars', spec: 'Master cut-off · pos/neg pair', qtyN: 1, guide: [30, 70], shop: '12vp', budget: { guide: [20, 45], shop: 'amazon' } },
-    { item: 'Blade fuse block', spec: `${totals.branches.length} circuits + spares · ${Math.max(6, totals.branches.length + 2)}-way`, qtyN: 1, guide: [15, 35], shop: '12vp' },
+    { item: 'Leisure battery', spec: `${state.chemistry} · Fogstar Drift · ${batteryUnits}× 100Ah`, qtyN: batteryUnits, guide: [250, 450], shop: 'fogstar', href: 'https://www.fogstar.co.uk/search?q=drift+lifepo4',
+      mid: { spec: `${state.chemistry} · Renogy Core · ${batteryUnits}× 100Ah`, guide: [200, 380], shop: 'renogy', href: 'https://uk.renogy.com/search?q=100ah+core+lifepo4' },
+      budget: { spec: `${state.chemistry} · Eco-Worthy · ${batteryUnits}× 100Ah`, guide: [160, 300], shop: 'ecoworthy', href: 'https://uk.eco-worthy.com/search?q=100ah+lifepo4+battery' } },
+    { item: 'Solar panels', spec: `Victron BlueSolar rigid · ${solarPanels}× 215W`, qtyN: solarPanels, guide: [110, 190], shop: 'victron', href: 'https://www.12voltplanet.co.uk/solar-power.html',
+      mid: { spec: `Renogy rigid mono · MC4 · ${solarPanels}× 200W`, guide: [90, 160], shop: 'renogy', href: 'https://uk.renogy.com/search?q=200w+solar+panel' },
+      budget: { spec: `Eco-Worthy rigid mono · ${solarPanels}× 195W`, guide: [65, 110], shop: 'ecoworthy', href: 'https://uk.eco-worthy.com/search?q=solar+panel+195w' } },
+    { item: 'MPPT controller', spec: `Victron SmartSolar · ${totals.mpptA}A`, qtyN: 1, guide: [60, 140], shop: 'victron', href: 'https://www.victronenergy.com/solar-charge-controllers',
+      mid: { spec: `Renogy Rover · ${totals.mpptA}A`, guide: [45, 90], shop: 'renogy', href: 'https://uk.renogy.com/search?q=rover+mppt' },
+      budget: { spec: `Generic MPPT · ${totals.mpptA}A`, guide: [30, 70], shop: 'amazon', href: 'https://www.amazon.co.uk/s?k=mppt+solar+charge+controller+40a' } },
+    ...(totals.inverterW > 0 ? [{ item: 'Pure sine inverter', spec: `Victron Phoenix class · ${totals.inverterW}W`, qtyN: 1, guide: [Math.round(totals.inverterW * 0.2), Math.round(totals.inverterW * 0.35)] as [number, number], shop: 'victron' as RetailerKey, href: 'https://www.victronenergy.com/inverters-chargers',
+      mid: { spec: `Renogy pure sine · ${totals.inverterW}W`, guide: [Math.round(totals.inverterW * 0.12), Math.round(totals.inverterW * 0.25)] as [number, number], shop: 'renogy' as RetailerKey, href: 'https://uk.renogy.com/search?q=2000w+pure+sine+inverter' },
+      budget: { spec: `Eco-Worthy pure sine · ${totals.inverterW}W`, guide: [Math.round(totals.inverterW * 0.07), Math.round(totals.inverterW * 0.16)] as [number, number], shop: 'ecoworthy' as RetailerKey, href: 'https://uk.eco-worthy.com/search?q=2000w+inverter' } }] : []),
+    { item: 'DC-DC charger', spec: 'Victron Orion-Tr Smart · 30A', qtyN: 1, guide: [130, 230], shop: 'victron', href: 'https://www.victronenergy.com/dc-dc-converters/orion-tr-smart',
+      mid: { spec: 'Renogy DCC30S · 30A', guide: [90, 160], shop: 'renogy', href: 'https://uk.renogy.com/search?q=dcc30s' },
+      budget: { spec: 'Eco-Worthy DC-DC · 20A', guide: [65, 130], shop: 'ecoworthy', href: 'https://uk.eco-worthy.com/search?q=dc+to+dc+charger' } },
+    { item: 'Mains charger', spec: 'Victron Blue Smart IP65 · 12/25', qtyN: 1, guide: [110, 190], shop: 'victron', href: 'https://www.victronenergy.com/chargers',
+      mid: { spec: 'Smart mains charger · 20A', guide: [60, 110], shop: '12vp', href: 'https://www.12voltplanet.co.uk/battery-chargers.html' },
+      budget: { spec: 'Generic smart charger · 20A', guide: [40, 85], shop: 'amazon', href: 'https://www.amazon.co.uk/s?k=smart+battery+charger+12v+20a' } },
+    { item: 'Battery monitor', spec: 'Victron SmartShunt · 500A', qtyN: 1, guide: [90, 130], shop: 'victron', href: 'https://www.victronenergy.com/battery-monitors',
+      mid: { spec: 'Renogy 500A shunt monitor', guide: [50, 90], shop: 'renogy', href: 'https://uk.renogy.com/search?q=battery+monitor' },
+      budget: { spec: 'Generic LCD shunt monitor', guide: [25, 55], shop: 'amazon', href: 'https://www.amazon.co.uk/s?k=battery+monitor+shunt' } },
+    { item: 'Isolator + busbars', spec: 'Master cut-off · pos/neg pair', qtyN: 1, guide: [30, 70], shop: '12vp', href: 'https://www.12voltplanet.co.uk/power-distribution.html', budget: { guide: [20, 45], shop: 'amazon', href: 'https://www.amazon.co.uk/s?k=12v+battery+isolator+switch+busbar' } },
+    { item: 'Blade fuse block', spec: `${totals.branches.length} circuits + spares · ${Math.max(6, totals.branches.length + 2)}-way`, qtyN: 1, guide: [15, 35], shop: '12vp', href: 'https://www.12voltplanet.co.uk/power-distribution.html' },
   ]
   const supplyRows: BomRow[] = [
     ...Object.entries(totals.cableMetres).sort(([a], [b]) => Number(b) - Number(a)).map(([gauge, metres]): BomRow => ({
@@ -387,22 +387,24 @@ export default function Page() {
       qtyN: 1,
       guide: cableGuide(Number(gauge), metres),
       shop: '12vp',
+      href: 'https://www.12voltplanet.co.uk/cable.html',
     })),
-    { item: 'MEGA fuse + holder', spec: `≤300mm from battery + · ${totals.mainFuseA}A`, qtyN: 1, guide: [15, 30], shop: '12vp' },
+    { item: 'MEGA fuse + holder', spec: `≤300mm from battery + · ${totals.mainFuseA}A`, qtyN: 1, guide: [15, 30], shop: '12vp', href: 'https://www.12voltplanet.co.uk/power-distribution.html' },
     ...(totals.inverterSupply
       ? [
-          { item: 'Inverter DC supply cable', spec: `${totals.inverterSupply.cable.size}mm² heavy-duty · ${Math.round(totals.inverterSupply.amps)}A draw · ≤${INVERTER_RUN_M}m run`, qtyN: 1, guide: cableGuide(totals.inverterSupply.cable.size, INVERTER_RUN_M * 2), shop: '12vp' as RetailerKey },
-          { item: 'Inverter high-current fuse', spec: `${totals.inverterSupply.fuseA}A ${totals.inverterSupply.fuseType} · ≤300mm from battery +`, qtyN: 1, guide: [18, 45] as [number, number], shop: '12vp' as RetailerKey },
+          { item: 'Inverter DC supply cable', spec: `${totals.inverterSupply.cable.size}mm² heavy-duty · ${Math.round(totals.inverterSupply.amps)}A draw · ≤${INVERTER_RUN_M}m run`, qtyN: 1, guide: cableGuide(totals.inverterSupply.cable.size, INVERTER_RUN_M * 2), shop: '12vp' as RetailerKey, href: 'https://www.12voltplanet.co.uk/cable.html' },
+          { item: 'Inverter high-current fuse', spec: `${totals.inverterSupply.fuseA}A ${totals.inverterSupply.fuseType} · ≤300mm from battery +`, qtyN: 1, guide: [18, 45] as [number, number], shop: '12vp' as RetailerKey, href: 'https://www.12voltplanet.co.uk/power-distribution.html' },
         ]
       : []),
-    { item: 'Tinned copper lugs', spec: `${totals.mainCable.size}mm² main run · ×4`, qtyN: 1, guide: [2, 6], shop: '12vp' },
-    ...(branchFuseSummary ? [{ item: 'Blade fuses', spec: `1.25× circuit load · ${branchFuseSummary}`, qtyN: 1, guide: [5, 12] as [number, number], shop: 'amazon' as RetailerKey }] : []),
-    ...(hasAc ? [{ item: 'AC consumer unit', spec: 'RCD + 2.5mm² 3-core flex', qtyN: 1, guide: [60, 120] as [number, number], shop: 'screwfix' as RetailerKey }] : []),
+    { item: 'Tinned copper lugs', spec: `${totals.mainCable.size}mm² main run · ×4`, qtyN: 1, guide: [2, 6], shop: '12vp', href: 'https://www.12voltplanet.co.uk/terminals-connectors.html' },
+    ...(branchFuseSummary ? [{ item: 'Blade fuses', spec: `1.25× circuit load · ${branchFuseSummary}`, qtyN: 1, guide: [5, 12] as [number, number], shop: 'amazon' as RetailerKey, href: 'https://www.amazon.co.uk/s?k=automotive+blade+fuse+assortment' }] : []),
+    ...(hasAc ? [{ item: 'AC consumer unit', spec: 'RCD + 2.5mm² 3-core flex', qtyN: 1, guide: [60, 120] as [number, number], shop: 'screwfix' as RetailerKey, href: 'https://www.screwfix.com/search?search=garage+consumer+unit' }] : []),
   ]
   const rowVariant = (r: BomRow) => (tier !== 'premium' && r[tier] ? r[tier] : undefined)
   const rowSpec = (r: BomRow) => rowVariant(r)?.spec ?? r.spec
   const rowGuide = (r: BomRow) => rowVariant(r)?.guide ?? r.guide
   const rowShop = (r: BomRow) => rowVariant(r)?.shop ?? r.shop
+  const rowHref = (r: BomRow) => rowVariant(r)?.href ?? r.href ?? RETAILERS[rowShop(r)].href
   const estLow = [...coreRows, ...supplyRows].reduce((s, r) => s + rowGuide(r)[0] * r.qtyN, 0)
   const estHigh = [...coreRows, ...supplyRows].reduce((s, r) => s + rowGuide(r)[1] * r.qtyN, 0)
 
@@ -433,7 +435,7 @@ export default function Page() {
             <button onClick={() => setState(freshDefaults())} className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-300 transition hover:border-amber-400/40 hover:text-amber-300" title="Reset to defaults">
               <RotateCcw className="size-3.5" /> Reset
             </button>
-            <span className="flex items-center gap-1.5 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-300"><ShieldCheck className="size-3.5" /> BS 7671</span>
+            <span className="flex items-center gap-1.5 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-300"><ShieldCheck className="size-3.5" /> BS EN 1648</span>
           </div>
           <button className="grid size-9 place-items-center rounded-lg border border-white/10 text-slate-300 md:hidden" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle navigation">
             {mobileOpen ? <X /> : <Menu />}
@@ -459,7 +461,7 @@ export default function Page() {
             <p className="mt-5 max-w-xl text-base leading-7 text-slate-400">A practical, regulation-aware toolkit for sizing the power system behind your next adventure. Adjust your load below and get a clear architecture in seconds.</p>
             <div className="mt-7 flex flex-wrap items-center gap-5 text-xs text-slate-500">
               <span className="flex items-center gap-2"><Check className="size-4 text-emerald-400" /> Live calculations</span>
-              <span className="flex items-center gap-2"><Check className="size-4 text-emerald-400" /> BS 7671 aware</span>
+              <span className="flex items-center gap-2"><Check className="size-4 text-emerald-400" /> BS EN 1648 aware</span>
               <span className="flex items-center gap-2"><Check className="size-4 text-emerald-400" /> Shareable builds</span>
             </div>
           </div>
@@ -472,8 +474,8 @@ export default function Page() {
 
         <div className="print-notice" role="note">
           <h2 className="text-xl font-bold">Official VanSpark 12V Pro Blueprint</h2>
-          <p className="mt-3">The live calculation grids are intentionally protected from direct printing. Purchase the official £7.99 PDF Blueprint for the professional, build-ready documentation.</p>
-          <p className="mt-3 font-semibold">Includes the Master Wiring Schematic, Full Circuit Fuse/Cable Schedule, and BS 7671 Compliance Checklist.</p>
+          <p className="mt-3">Thanks for printing — the on-screen grids are optimised for live use, so they print as a summary only. For the full build-ready documentation, formatted for the workshop and generated from your exact configuration, the £7.99 PDF Blueprint has everything below.</p>
+          <p className="mt-3 font-semibold">Includes the Master Wiring Schematic, Full Circuit Fuse/Cable Schedule, Equipment BOM, and Safety &amp; Compliance Checklist.</p>
         </div>
 
         <section id="estimator" className="print-protected grid gap-5 lg:grid-cols-[1.25fr_.75fr]">
@@ -714,7 +716,7 @@ export default function Page() {
             >
               <div className={`mt-5 flex items-center gap-2 text-[11px] ${totals.mainCable.pass ? 'text-emerald-300' : 'text-red-300'}`}>
                 {totals.mainCable.pass ? <Check className="size-3.5" /> : <X className="size-3.5" />}
-                {totals.mainCable.pass ? 'Under 3% drop · BS 7671 aware' : 'Over 3% drop — increase cable'}
+                {totals.mainCable.pass ? 'Under 3% drop · BS EN 1648 aware' : 'Over 3% drop — increase cable'}
               </div>
             </MetricCard>
           </div>
@@ -850,7 +852,7 @@ export default function Page() {
             <div className="mt-4 rounded-xl border border-amber-400/20 bg-amber-400/[0.06] p-4">
               <div className="flex items-start gap-3">
                 <Info className="mt-0.5 size-4 shrink-0 text-amber-400" />
-                <p className="text-xs leading-5 text-slate-400"><span className="font-semibold text-slate-200">12V DC only.</span> Cable ratings are indicative; confirm installation method, ambient temperature, grouping and voltage drop before selecting final protection.</p>
+                <p className="text-xs leading-5 text-slate-400"><span className="font-semibold text-slate-200">12V DC only.</span> Extra-low voltage DC guidance follows BS EN 1648-1 / ISO 10133 — BS 7671 (Section 721) applies to the 230V AC hookup side. Ratings are indicative; confirm installation method, ambient temperature, grouping and voltage drop before selecting final protection.</p>
               </div>
             </div>
           </div>
@@ -944,6 +946,10 @@ export default function Page() {
             <span className="text-lg font-semibold tracking-tight text-amber-300">£{estLow.toLocaleString('en-GB')}–£{estHigh.toLocaleString('en-GB')}</span>
             <span className="text-[10px] text-slate-500">{tier === 'premium' ? 'Victron / Fogstar pricing' : tier === 'mid' ? 'Renogy class pricing' : 'Eco-Worthy / generic pricing'} · compare suppliers</span>
           </div>
+          <p className="mt-3 flex items-start gap-2 text-[11px] leading-5 text-slate-500">
+            <Info className="mt-0.5 size-3.5 shrink-0 text-slate-500" />
+            Capacities, panel counts and fuse ratings are rounded up to the nearest available retail size — real-world quantities step up slightly from the exact calculated figures. That headroom is deliberate, not an error.
+          </p>
           <div className="mt-6 grid gap-5 lg:grid-cols-2">
             <div className="overflow-hidden rounded-xl border border-white/[0.07]">
               <div className="border-b border-white/[0.07] bg-slate-950/40 px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-amber-300">Core system</div>
@@ -958,7 +964,7 @@ export default function Page() {
                       <td className="px-4 py-2.5 text-slate-400">{rowSpec(row)}</td>
                       <td className="px-4 py-2.5 text-amber-300">£{rowGuide(row)[0]}–{rowGuide(row)[1]}</td>
                       <td className="px-4 py-2.5">
-                        <a {...affiliateProps(RETAILERS[rowShop(row)].href, row.item, 'bom')} className="inline-flex items-center gap-1 font-medium text-slate-300 transition hover:text-amber-300">
+                        <a {...affiliateProps(rowHref(row), row.item, 'bom')} className="inline-flex items-center gap-1 font-medium text-slate-300 transition hover:text-amber-300">
                           {RETAILERS[rowShop(row)].name} <ExternalLink className="size-3" />
                         </a>
                       </td>
@@ -980,7 +986,7 @@ export default function Page() {
                       <td className="px-4 py-2.5 text-slate-400">{rowSpec(row)}</td>
                       <td className="px-4 py-2.5 text-amber-300">£{rowGuide(row)[0]}–{rowGuide(row)[1]}</td>
                       <td className="px-4 py-2.5">
-                        <a {...affiliateProps(RETAILERS[rowShop(row)].href, row.item, 'bom')} className="inline-flex items-center gap-1 font-medium text-slate-300 transition hover:text-amber-300">
+                        <a {...affiliateProps(rowHref(row), row.item, 'bom')} className="inline-flex items-center gap-1 font-medium text-slate-300 transition hover:text-amber-300">
                           {RETAILERS[rowShop(row)].name} <ExternalLink className="size-3" />
                         </a>
                       </td>
@@ -1107,7 +1113,7 @@ export default function Page() {
             <h2 className="text-lg font-semibold text-white">Your professional build blueprint</h2>
             <p className="mt-2 max-w-xl text-xs leading-5 text-slate-400">A concise, build-ready PDF with the decisions behind this estimate, prepared for a qualified installer to review.</p>
             <div className="mt-5 grid gap-2 sm:grid-cols-2">
-              {['Master Wiring Schematic', 'Full Circuit Fuse/Cable Schedule', 'Equipment BOM', 'BS 7671 Compliance Checklist'].map((item) => (
+              {['Master Wiring Schematic', 'Full Circuit Fuse/Cable Schedule', 'Equipment BOM', 'Safety & Compliance Checklist'].map((item) => (
                 <div key={item} className="flex items-center gap-2 rounded-lg bg-slate-950/40 px-3 py-2.5 text-xs text-slate-300"><Check className="size-3.5 text-emerald-400" />{item}</div>
               ))}
             </div>
@@ -1146,7 +1152,7 @@ export default function Page() {
                   </div>
                 </div>
                 <ul className="mt-5 grid gap-3 text-sm text-slate-300">
-                  {['Master Wiring Schematic', 'Full Circuit Fuse/Cable Schedule', 'Equipment BOM', 'BS 7671 Compliance Checklist'].map((item) => (
+                  {['Master Wiring Schematic', 'Full Circuit Fuse/Cable Schedule', 'Equipment BOM', 'Safety & Compliance Checklist'].map((item) => (
                     <li key={item} className="flex items-center gap-2"><Check className="size-4 text-emerald-400" />{item}</li>
                   ))}
                 </ul>
@@ -1247,6 +1253,16 @@ export default function Page() {
               }),
             }}
           />
+        </section>
+
+        <section className="mt-14 rounded-2xl border border-white/[0.08] bg-[#111822] p-6">
+          <p className="text-[10px] font-bold uppercase tracking-[.18em] text-slate-500">About VanSpark</p>
+          <p className="mt-3 max-w-3xl text-xs leading-5 text-slate-400">
+            VanSpark is an independent design tool built for campervan self-builders. Sizing guidance follows BS EN 1648-1 / ISO 10133 for extra-low voltage 12V DC systems and BS 7671 Section 721 for the 230V AC hookup side. All figures are guidance only — have your finished installation inspected by a qualified auto-electrician before energising.
+          </p>
+          <p className="mt-3 max-w-3xl text-xs leading-5 text-slate-500">
+            Some outbound links are affiliate links — if you buy through them we may earn a small commission at no extra cost to you. It keeps the calculator free.
+          </p>
         </section>
 
         <footer className="mt-16 flex flex-col gap-3 border-t border-white/[0.07] pt-6 text-[11px] text-slate-600 sm:flex-row sm:items-center sm:justify-between">

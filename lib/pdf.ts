@@ -37,7 +37,7 @@ export async function downloadBlueprint(state: BuildState, s: SystemSizing) {
   doc.setFontSize(8.5)
   doc.setTextColor(148, 163, 184)
   const date = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
-  doc.text(`Generated ${date} · ${state.season} preset · BS 7671 aware guidance`, margin, 29)
+  doc.text(`Generated ${date} · ${state.season} preset · BS EN 1648 / BS 7671 §721 aware guidance`, margin, 29)
 
   y = 44
   const section = (title: string) => {
@@ -125,7 +125,7 @@ export async function downloadBlueprint(state: BuildState, s: SystemSizing) {
   afterTable()
 
   // 4 — Compliance checklist
-  section('Pre-energise checklist (BS 7671 aware)')
+  section('Pre-energise checklist (BS EN 1648 / BS 7671 §721 aware)')
   autoTable(doc, {
     startY: y,
     margin: { left: margin, right: margin },

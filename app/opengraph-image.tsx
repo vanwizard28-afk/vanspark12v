@@ -46,7 +46,7 @@ export default function Image() {
           </div>
         </div>
         <p style={{ fontSize: 34, color: '#94a3b8', marginTop: 48, lineHeight: 1.4, maxWidth: 900 }}>
-          Size your campervan 12V system — battery, solar, inverter, cable and fuse schedules — with live BS 7671 aware calculations.
+          Size your campervan 12V system — battery, solar, inverter, cable and fuse schedules — with live standards-aware calculations.
         </p>
         <div style={{ display: 'flex', gap: 16, marginTop: 32 }}>
           {['Live load estimator', 'Wiring schematic', 'Full BOM'].map((chip) => (
