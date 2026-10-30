@@ -16,9 +16,16 @@ export const RETAILERS = {
 
 export type RetailerKey = keyof typeof RETAILERS
 
+const AMAZON_ASSOCIATE_TAG = 'vanspark21-20'
+
 export function withUtm(href: string, campaign: string) {
-  const sep = href.includes('?') ? '&' : '?'
-  return `${href}${sep}utm_source=vanspark&utm_medium=affiliate&utm_campaign=${campaign}`
+  let url = href
+  // Amazon Associates: the tag= param is what attributes the commission —
+  // every outbound amazon.co.uk link gets it automatically.
+  if (url.includes('amazon.co.uk') && !url.includes('tag=')) {
+    url += `${url.includes('?') ? '&' : '?'}tag=${AMAZON_ASSOCIATE_TAG}`
+  }
+  return `${url}${url.includes('?') ? '&' : '?'}utm_source=vanspark&utm_medium=affiliate&utm_campaign=${campaign}`
 }
 
 // Spread onto <a> tags: adds UTM, sponsored rel (Google-compliant), and a
