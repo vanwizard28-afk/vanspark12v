@@ -28,8 +28,9 @@ export async function POST(req: NextRequest) {
       line_items: [{ price: priceId, quantity: 1 }],
       // The client restores the build from localStorage on return, so the
       // URLs stay short — Stripe caps metadata at 500 chars and oversized
-      // success/cancel URLs get rejected.
-      success_url: `${base}/?purchase=success`,
+      // success/cancel URLs get rejected. The session id lets /api/verify
+      // confirm the payment server-side before the PDF is generated.
+      success_url: `${base}/?purchase=success&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${base}/?purchase=cancelled`,
     })
     return NextResponse.json({ url: session.url })

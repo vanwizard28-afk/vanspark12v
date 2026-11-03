@@ -17,15 +17,33 @@ export const RETAILERS = {
 export type RetailerKey = keyof typeof RETAILERS
 
 const AMAZON_ASSOCIATE_TAG = 'vanspark21-20'
+const AWIN_PUBLISHER_ID = '3139749'
 
-// Per-domain affiliate params, injected automatically into every outbound
-// link. Add your ID when each program approves you — same pattern as Amazon.
+// Eco-Worthy direct affiliate program — appended to every uk.eco-worthy.com
+// link, including the partner CTAs and the PDF blueprint's shop link.
+const ECOWORTHY_REF = '12677554.ensDeXBrrQ'
+export const ECOWORTHY_URL = 'https://uk.eco-worthy.com/'
+export const ECOWORTHY_AFFILIATE_URL = `${ECOWORTHY_URL}?sca_ref=${ECOWORTHY_REF}`
+
+// Merchants on the Awin network: domain → advertiser ID (the awinmid shown
+// in your Awin dashboard for each joined program). Outbound links to these
+// domains are routed through awin1.com/cread.php so the sale attributes to
+// AWIN_PUBLISHER_ID — deep links carry the full destination in `ued`.
+// Eco-Worthy moved to their direct program (sca_ref below) — a link can't
+// carry both networks' tracking, so it no longer routes via Awin.
+const AWIN_MERCHANT_MIDS: Record<string, string> = {
+  'uk.renogy.com': '127461',
+  'lushlobster.com': '130141',
+}
+
+// Per-domain affiliate params for direct programs (no network), injected
+// automatically into every outbound link on that domain.
 const AFFILIATE_TAGS: Record<string, string> = {
   'amazon.co.uk': `tag=${AMAZON_ASSOCIATE_TAG}`,
-  // 'uk.renogy.com': 'aff=YOUR_RENOGY_ID',
+  'uk.eco-worthy.com': `sca_ref=${ECOWORTHY_REF}`,
+  // Fogstar runs on GoAffPro — swap in your referral code once approved:
   // 'fogstar.co.uk': 'ref=YOUR_FOGSTAR_CODE',
-  // 'uk.eco-worthy.com': 'ref=YOUR_ECOWORTHY_ID',
-  // '12voltplanet.co.uk': 'aff=YOUR_12VP_ID',
+  // 12 Volt Planet: no published program — partnership via enquiry form only.
 }
 
 export function withUtm(href: string, campaign: string) {
@@ -38,7 +56,14 @@ export function withUtm(href: string, campaign: string) {
       url += `${url.includes('?') ? '&' : '?'}${param}`
     }
   }
-  return `${url}${url.includes('?') ? '&' : '?'}utm_source=vanspark&utm_medium=affiliate&utm_campaign=${campaign}`
+  url = `${url}${url.includes('?') ? '&' : '?'}utm_source=vanspark&utm_medium=affiliate&utm_campaign=${campaign}`
+  // Awin merchants: wrap the fully-tagged destination in a tracking link.
+  for (const [domain, mid] of Object.entries(AWIN_MERCHANT_MIDS)) {
+    if (url.includes(domain)) {
+      return `https://www.awin1.com/cread.php?awinmid=${mid}&awinaffid=${AWIN_PUBLISHER_ID}&ued=${encodeURIComponent(url)}`
+    }
+  }
+  return url
 }
 
 // Spread onto <a> tags: adds UTM, sponsored rel (Google-compliant), and a
@@ -47,7 +72,7 @@ export function affiliateProps(href: string, item: string, campaign = 'hardware'
   return {
     href: withUtm(href, campaign),
     target: '_blank' as const,
-    rel: 'noreferrer sponsored',
+    rel: 'noopener noreferrer sponsored',
     onClick: () => trackEvent('affiliate_click', { item, campaign }),
   }
 }

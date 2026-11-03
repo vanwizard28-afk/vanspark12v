@@ -53,7 +53,7 @@ import {
 } from '@/lib/build-state'
 import { downloadBlueprint } from '@/lib/pdf'
 import { trackEvent } from '@/lib/analytics'
-import { RETAILERS, affiliateProps, cableGuide, type RetailerKey } from '@/lib/retail'
+import { RETAILERS, affiliateProps, cableGuide, ECOWORTHY_URL, type RetailerKey } from '@/lib/retail'
 import Schematic from '@/components/schematic'
 import ComponentGuide from '@/components/component-guide'
 import VanGraphic from '@/components/van-graphic'
@@ -211,14 +211,22 @@ export default function Page() {
     setHydrated(true)
 
     // Returning from Stripe: deliver the paid blueprint automatically so a
-    // paying customer never lands back on the calculator empty-handed.
+    // paying customer never lands back on the calculator empty-handed. The
+    // success URL alone is guessable, so the session is verified with Stripe
+    // before the PDF is generated.
     const purchase = params.get('purchase')
     if (purchase === 'success' && !purchaseHandled.current) {
       purchaseHandled.current = true
       const paid = restored ?? DEFAULT_STATE
-      downloadBlueprint(paid, sizeSystem(paid))
+      const sessionId = params.get('session_id') ?? ''
+      fetch(`/api/verify?session_id=${encodeURIComponent(sessionId)}`)
+        .then((r) => (r.ok ? r.json() : Promise.reject(new Error('verify_failed'))))
+        .then((data: { paid?: boolean }) => {
+          if (!data.paid) throw new Error('unpaid')
+          return downloadBlueprint(paid, sizeSystem(paid))
+        })
         .then(() => trackEvent('purchase', { value: 7.99, currency: 'GBP' }))
-        .catch(() => {})
+        .catch(() => setBlueprintOpen(true))
     } else if (purchase === 'cancelled') {
       setBlueprintOpen(true)
     }
@@ -996,6 +1004,12 @@ export default function Page() {
               </table>
             </div>
           </div>
+          <div className="mt-5 flex flex-col items-start justify-between gap-3 rounded-xl border border-amber-400/20 bg-amber-400/[0.05] px-4 py-3.5 sm:flex-row sm:items-center">
+            <p className="text-xs leading-5 text-slate-400"><span className="font-semibold text-amber-300">Hardware partner — Eco-Worthy.</span> Budget-friendly LiFePO4 batteries, solar kits, MPPTs and DC-DC chargers covering most of this list.</p>
+            <a {...affiliateProps(ECOWORTHY_URL, 'ecoworthy-partner', 'bom-cta')} className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-amber-400 px-3.5 py-2 text-xs font-bold text-slate-950 transition hover:bg-amber-300">
+              Shop the kit <ExternalLink className="size-3.5" />
+            </a>
+          </div>
           {totals.branches.length > 0 && (
             <div className="mt-5 overflow-hidden rounded-xl border border-white/[0.07]">
               <div className="border-b border-white/[0.07] bg-slate-950/40 px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-amber-300">Branch circuit schedule — {totals.branches.length} live circuits</div>
@@ -1187,6 +1201,12 @@ export default function Page() {
                 </p>
               )}
               <p className="mt-3 text-center text-[10px] text-slate-600">Secure payment via Stripe. Your PDF generates automatically once payment completes.</p>
+              <p className="mt-2 text-center text-[10px] text-slate-600">
+                Need the kit too?{' '}
+                <a {...affiliateProps(ECOWORTHY_URL, 'ecoworthy-partner', 'blueprint')} className="text-slate-400 underline underline-offset-2 transition hover:text-amber-300">
+                  Shop Eco-Worthy — hardware partner
+                </a>
+              </p>
             </div>
           </div>
         )}
@@ -1225,7 +1245,12 @@ export default function Page() {
               </a>
             ))}
           </div>
-          <p className="mb-3 mt-7 text-[10px] font-bold uppercase tracking-wider text-slate-500">Budget-friendly picks — Eco-Worthy / generic</p>
+          <div className="mb-3 mt-7 flex items-baseline justify-between gap-3">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Budget-friendly picks — Eco-Worthy / generic</p>
+            <a {...affiliateProps(ECOWORTHY_URL, 'ecoworthy-storefront', 'hardware')} className="inline-flex shrink-0 items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-amber-400 transition hover:text-amber-300">
+              Shop Eco-Worthy <ExternalLink className="size-3" />
+            </a>
+          </div>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {hardwareBudget.map((item) => (
               <a key={item.name} {...affiliateProps(item.href, item.name)} className="group rounded-xl border border-white/[0.08] bg-[#111822] p-5 transition hover:-translate-y-0.5 hover:border-amber-400/30 hover:bg-[#141e2a]">
