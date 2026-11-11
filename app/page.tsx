@@ -57,6 +57,7 @@ import { RETAILERS, affiliateProps, cableGuide, ECOWORTHY_URL, type RetailerKey 
 import Schematic from '@/components/schematic'
 import ComponentGuide from '@/components/component-guide'
 import VanGraphic from '@/components/van-graphic'
+import MobileCtaBar from '@/components/mobile-cta-bar'
 
 const ICONS: Record<string, typeof Thermometer> = {
   thermometer: Thermometer,
@@ -416,6 +417,24 @@ export default function Page() {
   const estLow = [...coreRows, ...supplyRows].reduce((s, r) => s + rowGuide(r)[0] * r.qtyN, 0)
   const estHigh = [...coreRows, ...supplyRows].reduce((s, r) => s + rowGuide(r)[1] * r.qtyN, 0)
 
+  // The spec only exists once there's real demand — every other field has a
+  // sane default, so a build with no active loads is "still configuring".
+  const specReady = totals.dailyWh > 0
+  const stickySummary = specReady
+    ? `${totals.batteryAh}Ah ${state.chemistry} · ${totals.solarW}W solar${totals.inverterW > 0 ? ` · ${totals.inverterW}W inverter` : ''} — schematic, BOM & checklist inside`
+    : 'Select at least one appliance to generate your spec'
+  const openCheckout = () => {
+    document.getElementById('download')?.scrollIntoView({ behavior: 'smooth' })
+    setBlueprintOpen(true)
+  }
+  const handleStickyCta = () => {
+    if (specReady) {
+      openCheckout()
+    } else {
+      document.getElementById('estimator')?.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
+
   return (
     <main className="min-h-screen bg-[#090d13] text-slate-100 selection:bg-amber-400/30">
       <header className="sticky top-0 z-20 border-b border-white/[0.07] bg-[#090d13]/90 backdrop-blur-xl">
@@ -460,7 +479,7 @@ export default function Page() {
         )}
       </header>
 
-      <div id="top" className="mx-auto max-w-[1240px] px-5 pb-16 pt-12 lg:px-8 lg:pt-20">
+      <div id="top" className="mx-auto max-w-[1240px] px-5 pb-28 pt-12 lg:px-8 lg:pb-16 lg:pt-20">
         <section className="relative mb-12 grid gap-10 lg:grid-cols-[1.05fr_.95fr] lg:items-center">
           <div className="relative max-w-3xl">
             <div className="pointer-events-none absolute -left-20 -top-24 size-64 rounded-full bg-amber-500/10 blur-[90px]" />
@@ -472,6 +491,9 @@ export default function Page() {
               <span className="flex items-center gap-2"><Check className="size-4 text-emerald-400" /> BS EN 1648 aware</span>
               <span className="flex items-center gap-2"><Check className="size-4 text-emerald-400" /> Shareable builds</span>
             </div>
+            <button onClick={openCheckout} className="mt-8 inline-flex items-center gap-2 rounded-xl bg-amber-400 px-6 py-3.5 text-sm font-bold text-slate-950 shadow-lg shadow-amber-500/20 transition hover:bg-amber-300">
+              Get the £7.99 build blueprint <ArrowRight className="size-4" />
+            </button>
           </div>
           <div className="relative overflow-hidden rounded-2xl border border-amber-400/20 bg-gradient-to-br from-[#141d2b] to-[#0c1119] p-6 shadow-2xl shadow-black/20">
             <div className="absolute -right-16 -top-16 size-52 rounded-full bg-amber-400/10 blur-3xl" />
@@ -486,7 +508,7 @@ export default function Page() {
           <p className="mt-3 font-semibold">Includes the Master Wiring Schematic, Full Circuit Fuse/Cable Schedule, Equipment BOM, and Safety &amp; Compliance Checklist.</p>
         </div>
 
-        <section id="estimator" className="print-protected grid gap-5 lg:grid-cols-[1.25fr_.75fr]">
+        <section id="estimator" className="print-protected grid scroll-mt-24 gap-5 lg:grid-cols-[1.25fr_.75fr]">
           <div className="rounded-2xl border border-white/[0.08] bg-[#111822] shadow-2xl shadow-black/10">
             <div className="flex items-start justify-between border-b border-white/[0.07] px-6 py-5">
               <div>
@@ -1121,7 +1143,7 @@ export default function Page() {
           </div>
         </section>
 
-        <section id="download" className="mt-14 grid gap-5 lg:grid-cols-[1.2fr_.8fr]">
+        <section id="download" className="mt-14 grid scroll-mt-24 gap-5 lg:grid-cols-[1.2fr_.8fr]">
           <div className="rounded-2xl border border-amber-400/20 bg-gradient-to-br from-amber-400/[0.1] to-[#111822] p-6">
             <p className="mb-1 text-[10px] font-bold uppercase tracking-[.18em] text-amber-400">Blueprint preview</p>
             <h2 className="text-lg font-semibold text-white">Your professional build blueprint</h2>
@@ -1336,6 +1358,8 @@ export default function Page() {
           </div>
         </section>
       </div>
+
+      <MobileCtaBar ready={specReady} summary={stickySummary} onAction={handleStickyCta} />
     </main>
   )
 }
