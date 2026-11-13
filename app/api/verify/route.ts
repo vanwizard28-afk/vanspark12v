@@ -18,7 +18,13 @@ export async function GET(req: NextRequest) {
     const { default: Stripe } = await import('stripe')
     const stripe = new Stripe(secretKey)
     const session = await stripe.checkout.sessions.retrieve(sessionId)
-    return NextResponse.json({ paid: session.payment_status === 'paid' })
+    return NextResponse.json({
+      paid: session.payment_status === 'paid',
+      // Buyer email for Google Ads enhanced conversions — the session id is
+      // effectively a bearer token (it already gates PDF delivery), so
+      // returning it to that same browser exposes nothing new.
+      email: session.customer_details?.email ?? null,
+    })
   } catch (err) {
     console.error('Stripe session verification failed:', err)
     return NextResponse.json({ error: 'verify_failed' }, { status: 500 })

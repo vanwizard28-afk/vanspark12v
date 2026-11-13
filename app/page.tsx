@@ -52,7 +52,7 @@ import {
   type BuildState,
 } from '@/lib/build-state'
 import { downloadBlueprint } from '@/lib/pdf'
-import { trackEvent } from '@/lib/analytics'
+import { trackEvent, trackConversion } from '@/lib/analytics'
 import { RETAILERS, affiliateProps, cableGuide, ECOWORTHY_URL, type RetailerKey } from '@/lib/retail'
 import Schematic from '@/components/schematic'
 import ComponentGuide from '@/components/component-guide'
@@ -222,16 +222,27 @@ export default function Page() {
       const sessionId = params.get('session_id') ?? ''
       fetch(`/api/verify?session_id=${encodeURIComponent(sessionId)}`)
         .then((r) => (r.ok ? r.json() : Promise.reject(new Error('verify_failed'))))
-        .then((data: { paid?: boolean }) => {
+        .then((data: { paid?: boolean; email?: string | null }) => {
           if (!data.paid) throw new Error('unpaid')
-          return downloadBlueprint(paid, sizeSystem(paid))
+          return downloadBlueprint(paid, sizeSystem(paid)).then(() => data)
         })
-        .then(() => trackEvent('purchase', { value: 7.99, currency: 'GBP' }))
+        .then((data) => {
+          trackEvent('purchase', { value: 7.99, currency: 'GBP' })
+          // Google Ads conversion — session id dedupes refreshes, buyer email
+          // feeds enhanced conversions (gtag hashes it before sending).
+          trackConversion({ value: 7.99, currency: 'GBP', transactionId: sessionId, email: data.email })
+        })
         .catch(() => setBlueprintOpen(true))
     } else if (purchase === 'cancelled') {
       setBlueprintOpen(true)
     }
   }, [])
+
+  // Product view for GA4/Ads audiences whenever the blueprint modal opens —
+  // covers preview clicks, the hero/sticky CTAs and the cancelled-return path.
+  useEffect(() => {
+    if (blueprintOpen) trackEvent('view_item', { value: 7.99, currency: 'GBP', item_name: 'VanSpark 12V Pro Build Blueprint' })
+  }, [blueprintOpen])
 
   // Persist every change to the URL (shareable) and localStorage (refresh-safe).
   useEffect(() => {
@@ -306,6 +317,7 @@ export default function Page() {
     setDownloading(true)
     setCheckoutError(false)
     trackEvent('blueprint_click', { daily_wh: Math.round(totals.dailyWh), inverter_w: totals.inverterW })
+    trackEvent('begin_checkout', { value: 7.99, currency: 'GBP' })
     try {
       const res = await fetch('/api/checkout', { method: 'POST' })
       const { url } = await res.json().catch(() => ({}))
@@ -1156,6 +1168,25 @@ export default function Page() {
             <button onClick={() => setBlueprintOpen(true)} className="mt-5 inline-flex items-center gap-2 rounded-lg bg-amber-400 px-4 py-2.5 text-sm font-bold text-slate-950 transition hover:bg-amber-300">
               Preview £7.99 blueprint <ArrowRight className="size-4" />
             </button>
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{
+                __html: JSON.stringify({
+                  '@context': 'https://schema.org',
+                  '@type': 'Product',
+                  name: 'VanSpark 12V Pro Build Blueprint',
+                  description: 'Build-ready campervan 12V electrical blueprint PDF — wiring schematic, fuse/cable schedule, equipment BOM and safety checklist generated from your exact configuration.',
+                  brand: { '@type': 'Brand', name: 'VanSpark 12V Pro' },
+                  offers: {
+                    '@type': 'Offer',
+                    price: '7.99',
+                    priceCurrency: 'GBP',
+                    availability: 'https://schema.org/InStock',
+                    url: 'https://vanspark.co.uk/#download',
+                  },
+                }),
+              }}
+            />
           </div>
           <div className="rounded-2xl border border-white/[0.08] bg-[#111822] p-6">
             <p className="text-[10px] font-bold uppercase tracking-[.18em] text-slate-500">Secure checkout</p>
