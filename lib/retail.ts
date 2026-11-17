@@ -17,7 +17,9 @@ export const RETAILERS = {
 export type RetailerKey = keyof typeof RETAILERS
 
 const AMAZON_ASSOCIATE_TAG = 'vanspark21-20'
-const AWIN_PUBLISHER_ID = '3139749'
+// Awin publisher account ID — also used by the MasterTag script in
+// components/analytics.tsx (dwin2.com/pub.{id}.min.js). Keep numeric.
+export const AWIN_PUBLISHER_ID = '3139749'
 
 // Eco-Worthy direct affiliate program — appended to every uk.eco-worthy.com
 // link, including the partner CTAs and the PDF blueprint's shop link.
