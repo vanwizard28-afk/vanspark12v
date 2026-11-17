@@ -24,7 +24,7 @@ export default function MobileCtaBar({ ready, summary, onAction }: Props) {
               : 'border border-amber-400/30 bg-amber-400/[0.08] text-amber-300 hover:bg-amber-400/[0.14]'
           }`}
         >
-          {ready ? 'Download PDF Blueprint · £7.99' : 'Configure your 12V system…'}
+          {ready ? 'Get your blueprint · £7.99' : 'Configure your 12V system…'}
           <ArrowRight className="size-4 shrink-0" />
         </button>
         <p className="mt-1.5 flex items-center justify-center gap-1.5 text-center text-[10px] text-slate-500">

@@ -58,6 +58,7 @@ import Schematic from '@/components/schematic'
 import ComponentGuide from '@/components/component-guide'
 import VanGraphic from '@/components/van-graphic'
 import MobileCtaBar from '@/components/mobile-cta-bar'
+import BlueprintPages from '@/components/blueprint-pages'
 
 const ICONS: Record<string, typeof Thermometer> = {
   thermometer: Thermometer,
@@ -89,16 +90,19 @@ const bladeFuseRows = [
   ['Compressor fridge', '10–15A', '2.5–4.0mm²'],
 ]
 
+// Max one-way run keeps voltage drop under the same 3% rule the calculator
+// uses (round-trip: 2 × run). Longer runs still work — they just need a
+// heavier gauge, exactly as selectCable() recommends.
 const cableReferenceRows = [
-  ['0.5mm²', 'LED lighting', '3A', '3m'],
-  ['1.0mm²', 'LED lighting', '6A', '5m'],
-  ['1.5mm²', 'Water pump', '10A', '6m'],
-  ['2.5mm²', 'USB sockets', '16A', '7m'],
-  ['4.0mm²', '12V sockets / USB', '25A', '8m'],
-  ['16mm²', 'Main inverter', '60A', '3m'],
-  ['25mm²', 'Main inverter', '90A', '4m'],
-  ['35mm²', 'Large inverter', '120A', '5m'],
-  ['50mm²', 'Large inverter', '150A', '6m'],
+  ['0.5mm²', 'LED lighting', '3A', '1.7m'],
+  ['1.0mm²', 'LED lighting', '6A', '1.7m'],
+  ['1.5mm²', 'Water pump', '10A', '1.5m'],
+  ['2.5mm²', 'USB sockets', '16A', '1.6m'],
+  ['4.0mm²', '12V sockets / USB', '25A', '1.6m'],
+  ['16mm²', 'Main inverter', '60A', '2.7m'],
+  ['25mm²', 'Main inverter', '90A', '2.9m'],
+  ['35mm²', 'Large inverter', '120A', '3.0m'],
+  ['50mm²', 'Large inverter', '150A', '3.4m'],
 ]
 
 const hardwarePremium = [
@@ -181,6 +185,17 @@ export default function Page() {
   const [blueprintOpen, setBlueprintOpen] = useState(false)
   const [downloading, setDownloading] = useState(false)
   const purchaseHandled = useRef(false)
+  // Funnel milestones — each fires at most once per page load.
+  const startedRef = useRef(false)
+  const completedRef = useRef(false)
+  const previewTrackedRef = useRef(false)
+
+  const markDesignStarted = () => {
+    if (!startedRef.current) {
+      startedRef.current = true
+      trackEvent('design_started')
+    }
+  }
 
   const [newName, setNewName] = useState('')
   const [newPower, setNewPower] = useState('')
@@ -228,6 +243,7 @@ export default function Page() {
         })
         .then((data) => {
           trackEvent('purchase', { value: 7.99, currency: 'GBP' })
+          trackEvent('payment_success')
           // Google Ads conversion — session id dedupes refreshes, buyer email
           // feeds enhanced conversions (gtag hashes it before sending).
           trackConversion({ value: 7.99, currency: 'GBP', transactionId: sessionId, email: data.email })
@@ -241,7 +257,13 @@ export default function Page() {
   // Product view for GA4/Ads audiences whenever the blueprint modal opens —
   // covers preview clicks, the hero/sticky CTAs and the cancelled-return path.
   useEffect(() => {
-    if (blueprintOpen) trackEvent('view_item', { value: 7.99, currency: 'GBP', item_name: 'VanSpark 12V Pro Build Blueprint' })
+    if (blueprintOpen) {
+      trackEvent('view_item', { value: 7.99, currency: 'GBP', item_name: 'VanSpark 12V Pro Build Blueprint' })
+      if (!previewTrackedRef.current) {
+        previewTrackedRef.current = true
+        trackEvent('pdf_preview_viewed', { source: 'modal' })
+      }
+    }
   }, [blueprintOpen])
 
   // Persist every change to the URL (shareable) and localStorage (refresh-safe).
@@ -267,14 +289,20 @@ export default function Page() {
     return { ...pick, fuse: profile.fuse }
   }, [state.circuit, state.circuitDistance])
 
-  const update = (patch: Partial<BuildState>) => setState((s) => ({ ...s, ...patch }))
+  const update = (patch: Partial<BuildState>) => {
+    markDesignStarted()
+    setState((s) => ({ ...s, ...patch }))
+  }
 
-  const toggleAppliance = (id: string) =>
+  const toggleAppliance = (id: string) => {
+    markDesignStarted()
     setState((s) => ({ ...s, appliances: s.appliances.map((a) => (a.id === id ? { ...a, active: !a.active } : a)) }))
+  }
 
   // Editable daily runtime per appliance — snap to 0.5h on steppers,
   // free-type on the input, always clamped to 0.5–24h.
-  const setApplianceHours = (id: string, hours: number, snap = false) =>
+  const setApplianceHours = (id: string, hours: number, snap = false) => {
+    markDesignStarted()
     setState((s) => ({
       ...s,
       appliances: s.appliances.map((a) => {
@@ -283,11 +311,15 @@ export default function Page() {
         return { ...a, hours: Math.min(24, Math.max(0.5, snapped)) }
       }),
     }))
+  }
 
-  const removeAppliance = (id: string) =>
+  const removeAppliance = (id: string) => {
+    markDesignStarted()
     setState((s) => ({ ...s, appliances: s.appliances.filter((a) => a.id !== id) }))
+  }
 
   const addAppliance = () => {
+    markDesignStarted()
     const power = Number(newPower)
     const hours = Number(newHours)
     const name = newName.trim()
@@ -318,10 +350,12 @@ export default function Page() {
     setCheckoutError(false)
     trackEvent('blueprint_click', { daily_wh: Math.round(totals.dailyWh), inverter_w: totals.inverterW })
     trackEvent('begin_checkout', { value: 7.99, currency: 'GBP' })
+    trackEvent('purchase_clicked', { value: 7.99, currency: 'GBP' })
     try {
       const res = await fetch('/api/checkout', { method: 'POST' })
       const { url } = await res.json().catch(() => ({}))
       if (res.ok && url) {
+        trackEvent('stripe_checkout_reached', { value: 7.99, currency: 'GBP' })
         window.location.href = url
         return
       }
@@ -447,6 +481,40 @@ export default function Page() {
     }
   }
 
+  // Funnel: a design counts as completed once the visitor has interacted and
+  // the spec actually exists. Default loads are already active on first
+  // visit, so this fires on their first change rather than on page load.
+  useEffect(() => {
+    if (hydrated && specReady && startedRef.current && !completedRef.current) {
+      completedRef.current = true
+      trackEvent('design_completed', {
+        daily_wh: Math.round(totals.dailyWh),
+        battery_ah: totals.batteryAh,
+        solar_w: totals.solarW,
+        inverter_w: totals.inverterW,
+      })
+    }
+  }, [hydrated, specReady, totals.dailyWh, totals.batteryAh, totals.solarW, totals.inverterW])
+
+  // Funnel: reaching the blueprint section by scrolling counts as a preview
+  // view even if they never open the modal. Deduped against the modal event.
+  useEffect(() => {
+    const el = document.getElementById('download')
+    if (!el || typeof IntersectionObserver === 'undefined') return
+    const obs = new IntersectionObserver(
+      (entries) => {
+        if (!previewTrackedRef.current && entries.some((e) => e.isIntersecting)) {
+          previewTrackedRef.current = true
+          trackEvent('pdf_preview_viewed', { source: 'scroll' })
+          obs.disconnect()
+        }
+      },
+      { threshold: 0.35 },
+    )
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [])
+
   return (
     <main className="min-h-screen bg-[#090d13] text-slate-100 selection:bg-amber-400/30">
       <header className="sticky top-0 z-20 border-b border-white/[0.07] bg-[#090d13]/90 backdrop-blur-xl">
@@ -504,7 +572,7 @@ export default function Page() {
               <span className="flex items-center gap-2"><Check className="size-4 text-emerald-400" /> Shareable builds</span>
             </div>
             <button onClick={openCheckout} className="mt-8 inline-flex items-center gap-2 rounded-xl bg-amber-400 px-6 py-3.5 text-sm font-bold text-slate-950 shadow-lg shadow-amber-500/20 transition hover:bg-amber-300">
-              Get the £7.99 build blueprint <ArrowRight className="size-4" />
+              Get your personalised blueprint · £7.99 <ArrowRight className="size-4" />
             </button>
           </div>
           <div className="relative overflow-hidden rounded-2xl border border-amber-400/20 bg-gradient-to-br from-[#141d2b] to-[#0c1119] p-6 shadow-2xl shadow-black/20">
@@ -552,7 +620,7 @@ export default function Page() {
                         onClick={() => removeAppliance(item.id)}
                         title={`Remove ${item.name}`}
                         aria-label={`Remove ${item.name}`}
-                        className="absolute -right-1.5 -top-1.5 z-10 grid size-5 place-items-center rounded-full border border-white/10 bg-slate-800 text-slate-400 transition hover:border-red-400/40 hover:bg-red-400/20 hover:text-red-300"
+                        className="absolute -right-1.5 -top-1.5 z-10 grid size-6 place-items-center rounded-full border border-white/10 bg-slate-800 text-slate-400 transition hover:border-red-400/40 hover:bg-red-400/20 hover:text-red-300"
                       >
                         <Trash2 className="size-3" />
                       </button>
@@ -563,7 +631,7 @@ export default function Page() {
                         <button
                           onClick={() => setApplianceHours(item.id, item.hours - 0.5, true)}
                           aria-label={`Decrease ${item.name} hours`}
-                          className="grid size-5 place-items-center rounded border border-white/10 text-xs text-slate-400 transition hover:border-amber-400/40 hover:text-amber-300"
+                          className="grid size-7 place-items-center rounded border border-white/10 text-sm text-slate-400 transition hover:border-amber-400/40 hover:text-amber-300"
                         >−</button>
                         <input
                           value={item.hours}
@@ -575,7 +643,7 @@ export default function Page() {
                         <button
                           onClick={() => setApplianceHours(item.id, item.hours + 0.5, true)}
                           aria-label={`Increase ${item.name} hours`}
-                          className="grid size-5 place-items-center rounded border border-white/10 text-xs text-slate-400 transition hover:border-amber-400/40 hover:text-amber-300"
+                          className="grid size-7 place-items-center rounded border border-white/10 text-sm text-slate-400 transition hover:border-amber-400/40 hover:text-amber-300"
                         >+</button>
                         <span className="ml-auto text-[9px] font-medium text-amber-300/80">{Math.round(item.watts * item.hours)} Wh</span>
                       </div>
@@ -818,6 +886,23 @@ export default function Page() {
           </div>
         </section>
 
+        {specReady && (
+          <section className="print-protected mt-5 rounded-2xl border border-emerald-400/25 bg-emerald-400/[0.06] p-5">
+            <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+              <div className="flex items-start gap-3">
+                <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-emerald-400 text-slate-950"><Check className="size-5" /></span>
+                <div>
+                  <h2 className="text-sm font-semibold text-white">Your electrical design is ready.</h2>
+                  <p className="mt-1 max-w-2xl text-xs leading-5 text-slate-400">Download your personalised blueprint to keep all your calculations, wiring information and component requirements together.</p>
+                </div>
+              </div>
+              <button onClick={openCheckout} className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-amber-400 px-5 py-3 text-xs font-bold text-slate-950 shadow-lg shadow-amber-500/20 transition hover:bg-amber-300">
+                Get blueprint · £7.99 <ArrowRight className="size-4" />
+              </button>
+            </div>
+          </section>
+        )}
+
         <section className="print-protected mt-14 grid gap-5 lg:grid-cols-[.8fr_1.2fr]">
           <div className="rounded-2xl border border-white/[0.08] bg-[#111822] p-6">
             <div className="flex items-start justify-between">
@@ -857,7 +942,7 @@ export default function Page() {
                 <p className="mt-3 max-w-md text-sm leading-6 text-slate-400">Get the complete printable blueprint with wiring diagrams, fuse schedules, component links, and an installation checklist.</p>
               </div>
               <a href="#download" className="mt-8 flex w-full items-center justify-between rounded-xl bg-amber-400 px-5 py-4 text-sm font-bold text-slate-950 shadow-lg shadow-amber-500/10 transition hover:bg-amber-300 sm:w-fit sm:min-w-[330px]">
-                <span>Download PDF Blueprint · £7.99</span>
+                <span>Get your blueprint · £7.99</span>
                 <ArrowRight className="size-4" />
               </a>
             </div>
@@ -877,7 +962,7 @@ export default function Page() {
             <div className="mt-5 overflow-hidden rounded-xl border border-white/[0.07]">
               <table className="w-full text-left text-xs">
                 <thead className="bg-slate-950/50 text-[10px] uppercase tracking-wider text-slate-500">
-                  <tr><th className="px-3 py-3 font-semibold">Cross-section</th><th className="px-3 py-3 font-semibold">Typical load</th><th className="px-3 py-3 font-semibold">Max amps</th><th className="px-3 py-3 font-semibold">Safe run</th></tr>
+                  <tr><th className="px-3 py-3 font-semibold">Cross-section</th><th className="px-3 py-3 font-semibold">Typical load</th><th className="px-3 py-3 font-semibold">Max amps</th><th className="px-3 py-3 font-semibold">Max run · ≤3% drop</th></tr>
                 </thead>
                 <tbody className="divide-y divide-white/[0.06] text-slate-300">
                   {cableReferenceRows.map(([size, load, amps, run]) => (
@@ -1158,15 +1243,28 @@ export default function Page() {
         <section id="download" className="mt-14 grid scroll-mt-24 gap-5 lg:grid-cols-[1.2fr_.8fr]">
           <div className="rounded-2xl border border-amber-400/20 bg-gradient-to-br from-amber-400/[0.1] to-[#111822] p-6">
             <p className="mb-1 text-[10px] font-bold uppercase tracking-[.18em] text-amber-400">Blueprint preview</p>
-            <h2 className="text-lg font-semibold text-white">Your professional build blueprint</h2>
-            <p className="mt-2 max-w-xl text-xs leading-5 text-slate-400">A concise, build-ready PDF with the decisions behind this estimate, prepared for a qualified installer to review.</p>
+            <h2 className="text-lg font-semibold text-white">Your personalised installation blueprint</h2>
+            <p className="mt-2 max-w-xl text-xs leading-5 text-slate-400">A complete, build-ready PDF generated from your exact configuration — every figure below comes from your live design, prepared for a qualified installer to review.</p>
             <div className="mt-5 grid gap-2 sm:grid-cols-2">
-              {['Master Wiring Schematic', 'Full Circuit Fuse/Cable Schedule', 'Equipment BOM', 'Safety & Compliance Checklist'].map((item) => (
-                <div key={item} className="flex items-center gap-2 rounded-lg bg-slate-950/40 px-3 py-2.5 text-xs text-slate-300"><Check className="size-3.5 text-emerald-400" />{item}</div>
+              {[
+                'Master wiring schematic',
+                'Personalised component list',
+                'Cable sizing & fuse schedule',
+                'Voltage-drop calculations',
+                'Battery & solar recommendations',
+                'Bill of materials (BOM)',
+                'Safety checklist',
+                'Printable design record',
+              ].map((item) => (
+                <div key={item} className="flex items-center gap-2 rounded-lg bg-slate-950/40 px-3 py-2.5 text-xs text-slate-300"><Check className="size-3.5 shrink-0 text-emerald-400" />{item}</div>
               ))}
             </div>
+            <div className="mt-5">
+              <BlueprintPages sizing={totals} state={state} />
+              <p className="mt-2 text-[10px] text-slate-500">Structure of the finished document — figures above are live from your build.</p>
+            </div>
             <button onClick={() => setBlueprintOpen(true)} className="mt-5 inline-flex items-center gap-2 rounded-lg bg-amber-400 px-4 py-2.5 text-sm font-bold text-slate-950 transition hover:bg-amber-300">
-              Preview £7.99 blueprint <ArrowRight className="size-4" />
+              Preview the £7.99 blueprint <ArrowRight className="size-4" />
             </button>
             <script
               type="application/ld+json"
@@ -1192,9 +1290,10 @@ export default function Page() {
             <p className="text-[10px] font-bold uppercase tracking-[.18em] text-slate-500">Secure checkout</p>
             <h3 className="mt-2 text-xl font-semibold text-white">Download the full plan</h3>
             <p className="mt-2 text-xs leading-5 text-slate-500">Stripe-secured purchase for the complete PDF blueprint.</p>
-            <button onClick={() => setBlueprintOpen(true)} className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-amber-400 px-4 py-3 text-sm font-bold text-slate-950 hover:bg-amber-300">
-              Buy blueprint · £7.99 <ShoppingCart className="size-4" />
+            <button onClick={() => setBlueprintOpen(true)} className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-amber-400 px-4 py-3.5 text-center text-sm font-bold leading-snug text-slate-950 hover:bg-amber-300">
+              Get Your Personalised Electrical Blueprint – £7.99
             </button>
+            <p className="mt-3 text-center text-[11px] leading-5 text-slate-500">Your complete electrical design, organised into one professional, printable document. No need to manually copy down all your calculations, components and wiring information.</p>
           </div>
         </section>
 
@@ -1235,19 +1334,27 @@ export default function Page() {
                     <p className="text-xs text-slate-500">Instant PDF download · £7.99</p>
                   </div>
                 </div>
-                <ul className="mt-5 grid gap-3 text-sm text-slate-300">
-                  {['Master Wiring Schematic', 'Full Circuit Fuse/Cable Schedule', 'Equipment BOM', 'Safety & Compliance Checklist'].map((item) => (
-                    <li key={item} className="flex items-center gap-2"><Check className="size-4 text-emerald-400" />{item}</li>
+                <ul className="mt-5 grid gap-2.5 text-sm text-slate-300">
+                  {[
+                    'Master wiring schematic',
+                    'Personalised component list & BOM',
+                    'Cable sizing & fuse schedule',
+                    'Voltage-drop calculations',
+                    'Battery & solar recommendations',
+                    'Safety checklist & printable design record',
+                  ].map((item) => (
+                    <li key={item} className="flex items-center gap-2"><Check className="size-4 shrink-0 text-emerald-400" />{item}</li>
                   ))}
                 </ul>
               </div>
               <button
                 onClick={handleBlueprint}
                 disabled={downloading}
-                className="mt-5 w-full rounded-lg bg-amber-400 px-4 py-3 text-sm font-bold text-slate-950 transition hover:bg-amber-300 disabled:cursor-wait disabled:opacity-60"
+                className="mt-5 w-full rounded-lg bg-amber-400 px-4 py-3 text-center text-sm font-bold leading-snug text-slate-950 transition hover:bg-amber-300 disabled:cursor-wait disabled:opacity-60"
               >
-                {downloading ? 'Redirecting to checkout…' : 'Buy blueprint · £7.99'}
+                {downloading ? 'Redirecting to checkout…' : 'Get Your Personalised Electrical Blueprint – £7.99'}
               </button>
+              <p className="mt-3 text-center text-[11px] leading-5 text-slate-500">Your complete electrical design, organised into one professional, printable document. No need to manually copy down all your calculations, components and wiring information.</p>
               {checkoutError && (
                 <p className="mt-3 rounded-lg border border-red-400/25 bg-red-400/[0.08] px-3 py-2 text-center text-[11px] text-red-300">
                   Checkout isn't available just yet — please try again shortly.
