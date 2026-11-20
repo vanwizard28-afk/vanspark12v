@@ -5,17 +5,17 @@ import './globals.css'
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
-  title: 'VanSpark 12V Pro | Campervan Electrical Design',
-  description: 'Size your campervan 12V power system with live load, battery, solar, inverter, and cable calculations.',
+  title: 'VanSpark 12V Pro | Free Campervan Electrical Calculator & Wiring Diagram',
+  description: 'Free campervan 12V calculator — size your leisure battery, solar array, inverter and cables live, then get a build-ready wiring diagram, parts list and safety checklist.',
   openGraph: {
-    title: 'VanSpark 12V Pro | Campervan Electrical Design',
+    title: 'VanSpark 12V Pro | Free Campervan Electrical Calculator & Wiring Diagram',
     description: 'Size your campervan 12V system — battery, solar, inverter, cable and fuse schedules — with live standards-aware calculations.',
     type: 'website',
     siteName: 'VanSpark 12V Pro',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'VanSpark 12V Pro | Campervan Electrical Design',
+    title: 'VanSpark 12V Pro | Free Campervan Electrical Calculator & Wiring Diagram',
     description: 'Size your campervan 12V system with live standards-aware calculations.',
   },
   icons: {

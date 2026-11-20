@@ -190,4 +190,220 @@ export const GUIDES: Guide[] = [
     buildIds: ['fridge', 'heater', 'lights', 'kettle', 'induction'],
     ctaLabel: 'Size your inverter + DC feed live',
   },
+  {
+    slug: 'campervan-solar-calculator',
+    title: 'How Much Solar Power Does a Campervan Need?',
+    metaTitle: 'Campervan Solar Calculator — How Many Watts Do You Need? | VanSpark',
+    description: 'Work out how many watts of solar your campervan needs: daily demand, UK peak sun hours by season, the real-world derate, and MPPT sizing.',
+    intro: 'Solar sizing is a matching exercise: your panels have to replace, each day, what your appliances took out — in the season you actually travel. UK sun is the awkward part of that equation, so let us start with honest numbers.',
+    sections: [
+      {
+        heading: 'Step 1 — your daily demand sets the target',
+        body: [
+          'Everything comes back to watt-hours. Add up your loads (watts × hours) to get daily demand — the battery calculator guide covers this in detail. A weekend build lands around 800–1,200Wh/day; a full-time setup with induction cooking can pass 2,000Wh.',
+          'Your array only needs to cover demand on the days you are not driving — alternator charging via a DC-DC unit covers transit days, so size solar for the parked-up days.',
+        ],
+      },
+      {
+        heading: 'Step 2 — UK peak sun hours, by season',
+        table: {
+          head: ['Season', 'Peak sun hours', '400W array yields (derated)'],
+          rows: [
+            ['Summer', '4.8 h', '~1,900 Wh/day'],
+            ['Spring / Autumn', '3.2 h', '~1,280 Wh/day'],
+            ['Winter', '1.5 h', '~600 Wh/day'],
+          ],
+        },
+        body: [
+          'A panel\'s "400W" rating is a laboratory figure. Flat mounting on a roof, UK cloud, heat and dirt cost roughly 30% — the calculator builds that derate in, which is why the yield column above is what you actually get.',
+        ],
+      },
+      {
+        heading: 'Step 3 — watts needed = demand ÷ sun hours ÷ 0.7',
+        body: [
+          'Say you use 1,000Wh/day and travel mostly in spring and autumn: 1,000 ÷ 3.2h ≈ 313W of rated output ÷ 0.7 derate ≈ 450W of panels. Round up to the sizes panels actually come in — two 200–220W rigid panels, or a single 400W+ module.',
+          'Winter changes the picture completely: the same 1,000Wh needs ~950W of roof. Most people either accept a battery buffer that alternator driving tops up, or treat deep-winter solar as a bonus rather than the plan.',
+        ],
+      },
+      {
+        heading: 'Size the MPPT to the array, not the other way round',
+        body: [
+          'The MPPT rating is output current into the battery: array watts ÷ ~14V charging voltage. A 450W array needs ~32A — a 40A controller like a Victron 100/30 or Renogy Rover 40 with headroom.',
+          'Check the controller\'s input voltage limit too (75V, 100V, 150V) before wiring panels in series — two "12V" panels in series exceed a 75V-unit\'s limit on a cold morning.',
+        ],
+      },
+      {
+        heading: 'Rigid or flexible panels?',
+        list: [
+          'Rigid mono — cheaper per watt, runs cooler, outlasts the van; needs roof rack or Z-brackets',
+          'Flexible — low profile and light, but runs hot (less output), and many fail within a few UK summers',
+          'Portable/suitcase — no roof holes, angle it at the sun, but it lives in your living space and can walk off a campsite',
+        ],
+      },
+    ],
+    faqs: [
+      ['Is 200W of solar enough for a campervan?', 'For a weekend build with a fridge, lights and USB in summer, usually yes. For a compressor fridge plus heater in spring/autumn, 300–450W is the comfortable range.'],
+      ['How many watts of solar per 100Ah of lithium?', 'A handy UK rule is 100–150W per 100Ah LiFePO4 for three-season use — double it if you genuinely camp off-grid through winter.'],
+      ['Can solar fully replace a DC-DC charger?', 'Not reliably in the UK. Winter peak sun is ~1.5h/day, so even a large array yields little. Solar and a 30A DC-DC cover each other\'s weak days — that is why the calculator sizes both.'],
+    ],
+    buildIds: ['fridge', 'heater', 'lights', 'usb', 'fan'],
+    ctaLabel: 'Size your solar array live',
+  },
+  {
+    slug: 'campervan-wiring-diagram',
+    title: 'Campervan Electrical Wiring Diagram: How a 12V System Fits Together',
+    metaTitle: 'Campervan Wiring Diagram (12V) — Every Part Explained | VanSpark',
+    description: 'A clear campervan 12V wiring diagram explained: battery at the centre, solar, DC-DC and shore charging in, fuse board and inverter out — and where every fuse goes.',
+    intro: 'Most van wiring diagrams look like spaghetti because they show every circuit at once. Strip it back and every 12V system is the same shape: energy goes into a battery through three charging paths, and comes out through protected circuits. Understand that skeleton and the detail fills itself in.',
+    sections: [
+      {
+        heading: 'The skeleton every diagram shares',
+        body: [
+          'Battery bank sits at the centre. On the input side: solar via an MPPT controller, the starter battery via a DC-DC charger, and shore power via a mains charger. On the output side: a fused distribution board for 12V branches, and optionally an inverter for 240V sockets.',
+          'All heavy connections meet on busbars — a positive and a negative — rather than stacking rings on the battery terminals. The negative side carries the battery monitor shunt: everything returns through it so the monitor sees the whole picture.',
+        ],
+      },
+      {
+        heading: 'Where every fuse goes (the part that matters for safety)',
+        list: [
+          'Main fuse — within 300mm of battery positive, protecting the main feed to the busbar',
+          'Solar MPPT — fused on the battery side; panel side only needs a breaker if you want an isolator',
+          'DC-DC charger — fused at BOTH ends: starter battery end and leisure battery end',
+          'Inverter — ANL or Class T within 300mm of the battery, sized to the cable',
+          'Each branch circuit — a blade fuse at the board, sized to 1.25× the circuit load',
+        ],
+        body: [
+          'The rule: a fuse protects the cable downstream of it, not the appliance. Any length of cable between a battery and its fuse is a potential unfused short — that is why the 300mm rule exists.',
+        ],
+      },
+      {
+        heading: 'Cable runs: plan the van before the diagram',
+        body: [
+          'Battery, charger and inverter sit close together — every metre of heavy cable costs money and voltage drop. The inverter feed especially should stay under 1.5m. Branch circuits radiate out to lights, pump, fridge and sockets through the fuse board.',
+          'Keep DC cable pairs together (positive and negative side by side reduces interference), protect runs through metalwork with grommets, and leave the battery monitor shunt as the single path for all negatives back to the battery.',
+        ],
+      },
+      {
+        heading: 'Reading a single-line diagram',
+        body: [
+          'The live schematic above this guide draws your system as a single line: generation left, battery centre, loads right, with cable size and fuse rating labelled on each run. Click any marked component for a terminal-by-terminal wiring view — it is generated from your actual load list, not a stock image.',
+          'A drawn-from-your-numbers diagram beats a generic one because fuse ratings and cable gauges shift with your inverter size and run lengths — the difference between a plan and a fire risk.',
+        ],
+      },
+    ],
+    faqs: [
+      ['Where does the main fuse go in a campervan?', 'Within 300mm of the leisure battery positive terminal, rated above your maximum continuous draw but below the main cable\'s ampacity — typically a MEGA fuse.'],
+      ['Do I need busbars in a campervan electrical system?', 'Not strictly, but strongly recommended once you have more than two connections per terminal — they keep heavy joints clean, serviceable and mechanically sound.'],
+      ['Can I wire a campervan electrical system myself?', 'The 12V DC side is a well-trodden DIY path if you size cables and fuses correctly — that is exactly what the calculator produces. The 240V hookup side should be installed or at least inspected by a qualified person.'],
+    ],
+    buildIds: ['fridge', 'heater', 'lights', 'usb', 'pump', 'laptop'],
+    ctaLabel: 'Generate your own wiring diagram',
+  },
+  {
+    slug: 'campervan-electrical-system-cost',
+    title: 'How Much Does a Campervan Electrical System Cost in the UK?',
+    metaTitle: 'Campervan Electrical System Cost (UK) — Budget to Pro | VanSpark',
+    description: 'What a campervan 12V electrical system really costs in the UK: budget, mid-range and premium breakdowns by component, plus where to save and where never to.',
+    intro: 'Ask ten van builders what their electrics cost and you will get answers from £400 to £4,000 — all true, for different systems. The honest way to estimate is per component, and one component dominates everything: the battery.',
+    sections: [
+      {
+        heading: 'The three honest price bands',
+        table: {
+          head: ['Component', 'Budget (Eco-Worthy/generic)', 'Mid (Renogy)', 'Premium (Victron/Fogstar)'],
+          rows: [
+            ['Battery, 100Ah LiFePO4', '£160–300', '£200–380', '£250–450'],
+            ['Solar panel, ~200W', '£65–110', '£90–160', '£110–190'],
+            ['MPPT controller', '£30–70', '£45–90', '£60–140'],
+            ['DC-DC charger, 30A', '£65–130', '£90–160', '£130–230'],
+            ['Inverter, 2000W', '£140–320', '£240–500', '£400–700'],
+            ['Monitor/shunt', '£25–55', '£50–90', '£90–130'],
+            ['Cable, fuses, lugs, board', '£150–300', '£200–350', '£250–400'],
+          ],
+        },
+        body: [
+          'A typical fridge-and-heater weekend build lands roughly £600–900 budget, £1,000–1,600 mid-range, or £1,800–3,000 premium. Add an inverter and the high-current cabling it needs and each band steps up a bracket.',
+        ],
+      },
+      {
+        heading: 'The battery is half the decision',
+        body: [
+          'Battery capacity is the single biggest line item, so oversizing is expensive. A bank sized to your real daily Wh — rather than "the biggest that fits" — is often the difference between a £700 and a £1,200 build.',
+          'This is where the calculator pays for itself several times over: size the bank first, then shop. Heater-equipped lithium (Fogstar Drift class) is worth the premium only if you genuinely camp below freezing — LiFePO4 cannot accept charge under 0°C without it.',
+        ],
+      },
+      {
+        heading: 'Where to save — and where never to',
+        list: [
+          'Save on: the inverter brand (a budget pure-sine unit works fine for occasional kettles)',
+          'Save on: the monitor (a £30 shunt display tells you 90% of what a SmartShunt does)',
+          'Never save on: cable gauge, fuses and terminations — undersized protection is how vans burn',
+          'Never save on: the DC-DC charger on a Euro 6 van — a £20 split-charge relay will simply not charge properly',
+        ],
+      },
+      {
+        heading: 'The hidden line items people forget',
+        body: [
+          'Busbar pairs, an isolator switch, the blade fuse board, roof entry glands, heat-shrink, crimp lugs and a proper crimper add £100–200 that never appears in "cost of a leisure battery" posts. The bill of materials in the calculator itemises these so the number you see is the number you will actually spend.',
+        ],
+      },
+    ],
+    faqs: [
+      ['What is the cheapest campervan electrical setup?', 'A single 100Ah LiFePO4, one 100–200W panel, a basic MPPT and a fuse board covers lights, USB and a coolbox for roughly £400–550 — skip the inverter entirely and run everything on 12V/USB-C.'],
+      ['Is lithium worth the extra cost for a campervan?', 'Almost always yes now: 80% usable capacity vs 50% for AGM, a quarter of the weight, and 5–10× the cycle life means cost per usable cycle is lower despite the higher sticker price.'],
+      ['How much does professional installation add?', 'A full professional install typically doubles parts cost — £1,500–3,000 labour depending on complexity. DIY the 12V side is very achievable with a proper wiring plan; have the 240V hookup checked regardless.'],
+    ],
+    buildIds: ['fridge', 'heater', 'lights', 'usb'],
+    ctaLabel: 'Price your exact build live',
+  },
+  {
+    slug: 'dc-dc-charger-vs-split-charge',
+    title: 'DC-DC Charger vs Split Charge Relay: What Your Van Actually Needs',
+    metaTitle: 'DC-DC Charger vs Split Charge Relay — Campervan Guide | VanSpark',
+    description: 'Split charge relay or DC-DC (battery-to-battery) charger? Why smart alternators changed the answer, what amp rating to pick, and how to fuse both ends.',
+    intro: 'Charging a leisure battery from the engine used to be a £20 relay and a thick wire. Euro 6 smart alternators changed that — and it is now the single most common reason a new van build "mysteriously" never charges while driving.',
+    sections: [
+      {
+        heading: 'What each device actually does',
+        body: [
+          'A split charge relay (VSR) simply connects the two batteries once the starter is above ~13.3V — the batteries equalise, sharing whatever voltage the alternator happens to output.',
+          'A DC-DC charger is an active charger: it takes whatever the alternator gives it and delivers a proper multi-stage charging profile at the right voltage for your battery chemistry — including the ~14.4–14.6V LiFePO4 wants.',
+        ],
+      },
+      {
+        heading: 'The Euro 6 problem',
+        body: [
+          'Smart alternators on Euro 6 / BlueMotion vehicles deliberately drop output once the starter battery is charged — sometimes to 12.4V or lower. A relay then connects your leisure battery to a voltage too low to charge it, and a lithium bank barely accepts anything below ~13.6V anyway.',
+          'On an older alternator a VSR half-works — AGM will accept a decent charge. On any modern van, or with lithium at any age, a DC-DC with ignition/D+ sensing is effectively mandatory.',
+        ],
+      },
+      {
+        heading: 'What amp rating do you need?',
+        table: {
+          head: ['Charger rating', 'Charge rate', 'Good for'],
+          rows: [
+            ['18–20A', '~250Wh per hour of driving', 'Weekend builds, small banks, standard alternators'],
+            ['30A', '~360Wh per hour of driving', 'The sweet spot for most vans and 150–300Ah banks'],
+            ['50A+', '~600Wh per hour of driving', 'Large banks, heavy use — check your alternator can spare it'],
+          ],
+        },
+        body: [
+          'Do not oversize: a 50A charger pulls real load from the alternator. Most manufacturers suggest keeping DC-DC draw under ~40% of alternator rating — 30A is the default answer for a reason.',
+        ],
+      },
+      {
+        heading: 'Fusing it properly — both ends',
+        body: [
+          'A DC-DC charger sits between two batteries, so both cable ends need protection within 300mm of each positive terminal: a 30A charger typically gets 40A fuses. The cable is sized for the full round trip just like any other run.',
+          'Popular picks: Victron Orion-Tr Smart (ignition detection built in) at the premium end, Renogy DCC30S mid-range — the DCC30S also takes a solar input, which can simplify wiring on tight builds.',
+        ],
+      },
+    ],
+    faqs: [
+      ['Do I need a DC-DC charger with a smart alternator?', 'Yes — a basic split-charge relay on a Euro 6 van undercharges the leisure bank because the alternator drops its output early. Use a DC-DC with ignition or D+ sensing.'],
+      ['Can a DC-DC charge lithium and AGM batteries?', 'Yes — that is the point of it. Set the profile to match your chemistry; LiFePO4 typically wants ~14.4V absorption with little or no float.'],
+      ['Is a 30A DC-DC charger enough?', 'For most weekend and week-a-way builds, yes — an hour of driving returns ~360Wh, roughly a day of fridge use. Only constant full-timers with big banks need 50A.'],
+    ],
+    buildIds: ['fridge', 'heater', 'lights', 'usb'],
+    ctaLabel: 'Check your charging setup live',
+  },
 ]

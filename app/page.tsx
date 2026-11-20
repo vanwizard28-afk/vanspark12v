@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import {
   ArrowRight,
   BatteryCharging,
@@ -18,6 +18,7 @@ import {
   Lightbulb,
   Link2,
   Lock,
+  Mail,
   Menu,
   Plus,
   Radio,
@@ -56,6 +57,8 @@ import {
 import { downloadBlueprint } from '@/lib/pdf'
 import { trackEvent, trackConversion } from '@/lib/analytics'
 import { RETAILERS, affiliateProps, cableGuide, ECOWORTHY_URL, type RetailerKey } from '@/lib/retail'
+import { PRESET_BUILDS, presetState } from '@/lib/presets'
+import { GUIDES } from '@/lib/guides'
 import Schematic from '@/components/schematic'
 import ComponentGuide from '@/components/component-guide'
 import VanGraphic from '@/components/van-graphic'
@@ -173,6 +176,14 @@ const FAQS: [string, string][] = [
     'Where should the main fuse go in a campervan electrical system?',
     'Within 300mm of the battery positive terminal. The fuse protects the cable, not the appliance, so it must sit before any cable run that could short to the chassis. High-current inverter feeds should use MEGA, ANL, or Class T fuses rated above the inverter draw but below the cable ampacity.',
   ],
+  [
+    'How much solar power do I need for a campervan?',
+    'Match the array to your daily watt-hours and the season you travel: a weekend build using ~1,000Wh/day needs roughly 300–450W for UK spring/autumn (about 3.2 peak sun hours with a 30% real-world derate). Winter yield is roughly a third of summer, so most off-grid builds pair solar with a DC-DC charger for driving days.',
+  ],
+  [
+    'How much does a campervan electrical system cost?',
+    'A fridge-and-heater weekend build typically runs £600–900 budget (Eco-Worthy/generic), £1,000–1,600 mid-range (Renogy) or £1,800–3,000 premium (Victron/Fogstar). The battery is the biggest line item by far — sizing the bank to your real demand rather than guessing is where the savings hide.',
+  ],
 ]
 
 function freshDefaults(): BuildState {
@@ -209,6 +220,9 @@ export default function Page() {
   const [newAc, setNewAc] = useState(false)
   const [tier, setTier] = useState<'premium' | 'mid' | 'budget'>('premium')
   const [guideId, setGuideId] = useState<string | null>(null)
+  const [subEmail, setSubEmail] = useState('')
+  const [subConsent, setSubConsent] = useState(false)
+  const [subState, setSubState] = useState<'idle' | 'sending' | 'done' | 'error'>('idle')
 
   // Restore the build from a shared URL (?build=...) or localStorage once on mount.
   useEffect(() => {
@@ -553,6 +567,9 @@ export default function Page() {
   // The spec only exists once there's real demand — every other field has a
   // sane default, so a build with no active loads is "still configuring".
   const specReady = totals.dailyWh > 0
+  // One-line build summary — used by the lead-capture payload and shown as a
+  // copyable fallback if the subscribe endpoint isn't configured.
+  const specSummary = `${totals.batteryAh}Ah ${state.chemistry} · ${totals.solarW}W solar${totals.inverterW > 0 ? ` · ${totals.inverterW}W inverter` : ''} · ${totals.mainCable.size}mm² main cable · ${totals.branches.length} circuits`
   const stickySummary = specReady
     ? `${totals.batteryAh}Ah ${state.chemistry} · ${totals.solarW}W solar${totals.inverterW > 0 ? ` · ${totals.inverterW}W inverter` : ''} — schematic, BOM & checklist inside`
     : 'Select at least one appliance to generate your spec'
@@ -565,6 +582,37 @@ export default function Page() {
       openCheckout()
     } else {
       document.getElementById('estimator')?.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
+
+  const applyPreset = (name: string, ids: string[]) => {
+    markDesignStarted()
+    trackEvent('preset_applied', { preset: name })
+    setState(presetState(ids))
+  }
+
+  // Lead capture — "email me my spec". Converts paid-traffic visitors who
+  // aren't ready to buy into a nurture list instead of a bounce.
+  const handleSubscribe = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (subState === 'sending') return
+    setSubState('sending')
+    try {
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          email: subEmail,
+          build: new URLSearchParams(window.location.search).get(URL_PARAM),
+          summary: specSummary,
+        }),
+      })
+      if (!res.ok) throw new Error('subscribe_failed')
+      setSubState('done')
+      trackEvent('generate_lead', { method: 'email_spec' })
+      trackEvent('lead_subscribed')
+    } catch {
+      setSubState('error')
     }
   }
 
@@ -683,6 +731,18 @@ export default function Page() {
                 <h2 className="text-lg font-semibold text-white">What are you powering?</h2>
               </div>
               <div className="rounded-lg bg-slate-800/80 p-2 text-slate-400"><Gauge className="size-5" /></div>
+            </div>
+            <div className="flex flex-wrap items-center gap-2 border-b border-white/[0.07] px-4 py-3 sm:px-5">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Start from</span>
+              {PRESET_BUILDS.map((p) => (
+                <button
+                  key={p.name}
+                  onClick={() => applyPreset(p.name, p.ids)}
+                  className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-300 transition hover:border-amber-400/40 hover:text-amber-300"
+                >
+                  {p.name}
+                </button>
+              ))}
             </div>
             <div className="grid gap-2 p-4 sm:grid-cols-2 sm:p-5">
               {state.appliances.map((item) => {
@@ -987,6 +1047,41 @@ export default function Page() {
                 Get blueprint · £9.99 <ArrowRight className="size-4" />
               </button>
             </div>
+            {subState !== 'done' ? (
+              <form onSubmit={handleSubscribe} className="mt-4 border-t border-emerald-400/15 pt-4">
+                <p className="flex items-center gap-1.5 text-xs font-semibold text-slate-300"><Mail className="size-3.5 text-emerald-300" /> Not ready to buy? Get your spec by email — free.</p>
+                <div className="mt-2.5 flex flex-col gap-2.5 sm:flex-row">
+                  <input
+                    type="email"
+                    required
+                    value={subEmail}
+                    onChange={(e) => setSubEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    className="w-full flex-1 rounded-lg border border-white/10 bg-slate-950/60 px-3 py-2 text-xs text-slate-200 outline-none placeholder:text-slate-600 focus:border-emerald-400"
+                  />
+                  <button
+                    type="submit"
+                    disabled={subState === 'sending'}
+                    className="shrink-0 rounded-lg border border-emerald-400/40 bg-emerald-400/10 px-4 py-2 text-xs font-bold text-emerald-300 transition hover:bg-emerald-400/20 disabled:cursor-wait disabled:opacity-60"
+                  >
+                    {subState === 'sending' ? 'Sending…' : 'Send my spec'}
+                  </button>
+                </div>
+                <label className="mt-2.5 flex items-start gap-2 text-[10px] leading-4 text-slate-500">
+                  <input type="checkbox" required checked={subConsent} onChange={(e) => setSubConsent(e.target.checked)} className="mt-0.5 size-3 shrink-0 accent-emerald-400" />
+                  <span>Send me my spec summary and the occasional build tip. No spam — unsubscribe anytime. See <a href="/privacy" className="underline underline-offset-2 hover:text-slate-300">privacy</a>.</span>
+                </label>
+                {subState === 'error' && (
+                  <p className="mt-2 rounded-lg border border-red-400/25 bg-red-400/[0.08] px-3 py-2 text-[11px] leading-5 text-red-300">
+                    Couldn't send right now — here's your spec to copy: <span className="font-mono text-red-200">{specSummary}</span>
+                  </p>
+                )}
+              </form>
+            ) : (
+              <p className="mt-4 flex items-center gap-2 border-t border-emerald-400/15 pt-4 text-xs text-emerald-300">
+                <Check className="size-4 shrink-0" /> Done — your spec is on its way. We'll only email when we have something useful.
+              </p>
+            )}
           </section>
         )}
 
@@ -1493,6 +1588,24 @@ export default function Page() {
               }),
             }}
           />
+        </section>
+
+        <section className="print-protected mt-14">
+          <div className="mb-5 flex items-end justify-between">
+            <div>
+              <p className="mb-1 text-[10px] font-bold uppercase tracking-[.18em] text-amber-400">Deep-dive guides</p>
+              <h2 className="text-2xl font-semibold tracking-tight text-white">Learn the system before you build it.</h2>
+            </div>
+            <a href="/guides" className="hidden shrink-0 text-xs text-amber-300 transition hover:text-amber-200 sm:block">All guides →</a>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {GUIDES.map((g) => (
+              <a key={g.slug} href={`/guides/${g.slug}`} className="group rounded-xl border border-white/[0.08] bg-[#111822] p-5 transition hover:-translate-y-0.5 hover:border-amber-400/30 hover:bg-[#141e2a]">
+                <h3 className="text-sm font-semibold text-slate-200 transition group-hover:text-amber-300">{g.title}</h3>
+                <p className="mt-1.5 line-clamp-2 text-xs leading-5 text-slate-500">{g.description}</p>
+              </a>
+            ))}
+          </div>
         </section>
 
         <section className="mt-14 rounded-2xl border border-white/[0.08] bg-[#111822] p-6">
