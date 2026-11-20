@@ -17,6 +17,7 @@ import {
   Leaf,
   Lightbulb,
   Link2,
+  Lock,
   Menu,
   Plus,
   Radio,
@@ -45,6 +46,7 @@ import {
 import {
   DEFAULT_STATE,
   STORAGE_KEY,
+  UNLOCK_KEY,
   URL_PARAM,
   decodeState,
   encodeState,
@@ -180,6 +182,9 @@ function freshDefaults(): BuildState {
 export default function Page() {
   const [state, setState] = useState<BuildState>(freshDefaults)
   const [hydrated, setHydrated] = useState(false)
+  // Paid unlock for the schematic + BOM gate. Starts locked — a verified
+  // purchase (or a prior one in localStorage) flips it after mount.
+  const [unlocked, setUnlocked] = useState(false)
   const [copied, setCopied] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [blueprintOpen, setBlueprintOpen] = useState(false)
@@ -224,6 +229,11 @@ export default function Page() {
         // corrupted storage — fall back to defaults
       }
     }
+    try {
+      if (localStorage.getItem(UNLOCK_KEY) === '1') setUnlocked(true)
+    } catch {
+      // storage blocked — sections stay gated this visit
+    }
     setHydrated(true)
 
     // Returning from Stripe: deliver the paid blueprint automatically so a
@@ -239,6 +249,14 @@ export default function Page() {
         .then((r) => (r.ok ? r.json() : Promise.reject(new Error('verify_failed'))))
         .then((data: { paid?: boolean; email?: string | null }) => {
           if (!data.paid) throw new Error('unpaid')
+          // Verified with Stripe — unlock the schematic + BOM on-page so the
+          // buyer gets the interactive version too, not only the PDF.
+          try {
+            localStorage.setItem(UNLOCK_KEY, '1')
+          } catch {
+            // storage blocked — unlock for this session anyway
+          }
+          setUnlocked(true)
           return downloadBlueprint(paid, sizeSystem(paid)).then(() => data)
         })
         .then((data) => {
@@ -414,26 +432,26 @@ export default function Page() {
     { item: 'Leisure battery', spec: `${state.chemistry} · Fogstar Drift · ${batteryUnits}× 100Ah`, qtyN: batteryUnits, guide: [250, 450], shop: 'fogstar', href: 'https://www.fogstar.co.uk/search?q=drift+lifepo4',
       mid: { spec: `${state.chemistry} · Renogy Core · ${batteryUnits}× 100Ah`, guide: [200, 380], shop: 'renogy', href: 'https://uk.renogy.com/search?q=100ah+core+lifepo4' },
       budget: { spec: `${state.chemistry} · Eco-Worthy · ${batteryUnits}× 100Ah`, guide: [160, 300], shop: 'ecoworthy', href: 'https://uk.eco-worthy.com/search?q=100ah+lifepo4+battery' } },
-    { item: 'Solar panels', spec: `Victron BlueSolar rigid · ${solarPanels}× 215W`, qtyN: solarPanels, guide: [110, 190], shop: 'victron', href: 'https://www.12voltplanet.co.uk/solar-power.html',
+    { item: 'Solar panels', spec: `Victron BlueSolar rigid · ${solarPanels}× 215W`, qtyN: solarPanels, guide: [110, 190], shop: 'amazon', href: 'https://www.amazon.co.uk/s?k=victron+solar+panel+200w',
       mid: { spec: `Renogy rigid mono · MC4 · ${solarPanels}× 200W`, guide: [90, 160], shop: 'renogy', href: 'https://uk.renogy.com/search?q=200w+solar+panel' },
       budget: { spec: `Eco-Worthy rigid mono · ${solarPanels}× 195W`, guide: [65, 110], shop: 'ecoworthy', href: 'https://uk.eco-worthy.com/search?q=solar+panel+195w' } },
-    { item: 'MPPT controller', spec: `Victron SmartSolar · ${totals.mpptA}A`, qtyN: 1, guide: [60, 140], shop: 'victron', href: 'https://www.12voltplanet.co.uk/victron.html',
+    { item: 'MPPT controller', spec: `Victron SmartSolar · ${totals.mpptA}A`, qtyN: 1, guide: [60, 140], shop: 'amazon', href: 'https://www.amazon.co.uk/s?k=victron+smartsolar+mppt',
       mid: { spec: `Renogy Rover · ${totals.mpptA}A`, guide: [45, 90], shop: 'renogy', href: 'https://uk.renogy.com/search?q=rover+mppt' },
       budget: { spec: `Generic MPPT · ${totals.mpptA}A`, guide: [30, 70], shop: 'amazon', href: 'https://www.amazon.co.uk/s?k=mppt+solar+charge+controller+40a' } },
-    ...(totals.inverterW > 0 ? [{ item: 'Pure sine inverter', spec: `Victron Phoenix class · ${totals.inverterW}W`, qtyN: 1, guide: [Math.round(totals.inverterW * 0.2), Math.round(totals.inverterW * 0.35)] as [number, number], shop: 'victron' as RetailerKey, href: 'https://www.12voltplanet.co.uk/victron.html',
+    ...(totals.inverterW > 0 ? [{ item: 'Pure sine inverter', spec: `Victron Phoenix class · ${totals.inverterW}W`, qtyN: 1, guide: [Math.round(totals.inverterW * 0.2), Math.round(totals.inverterW * 0.35)] as [number, number], shop: 'amazon' as RetailerKey, href: 'https://www.amazon.co.uk/s?k=victron+phoenix+inverter+12v',
       mid: { spec: `Renogy pure sine · ${totals.inverterW}W`, guide: [Math.round(totals.inverterW * 0.12), Math.round(totals.inverterW * 0.25)] as [number, number], shop: 'renogy' as RetailerKey, href: 'https://uk.renogy.com/search?q=2000w+pure+sine+inverter' },
       budget: { spec: `Eco-Worthy pure sine · ${totals.inverterW}W`, guide: [Math.round(totals.inverterW * 0.07), Math.round(totals.inverterW * 0.16)] as [number, number], shop: 'ecoworthy' as RetailerKey, href: 'https://uk.eco-worthy.com/search?q=2000w+inverter' } }] : []),
-    { item: 'DC-DC charger', spec: 'Victron Orion-Tr Smart · 30A', qtyN: 1, guide: [130, 230], shop: 'victron', href: 'https://www.12voltplanet.co.uk/victron.html',
+    { item: 'DC-DC charger', spec: 'Victron Orion-Tr Smart · 30A', qtyN: 1, guide: [130, 230], shop: 'amazon', href: 'https://www.amazon.co.uk/s?k=victron+orion-tr+smart+30a',
       mid: { spec: 'Renogy DCC30S · 30A', guide: [90, 160], shop: 'renogy', href: 'https://uk.renogy.com/search?q=dcc30s' },
       budget: { spec: 'Eco-Worthy DC-DC · 20A', guide: [65, 130], shop: 'ecoworthy', href: 'https://uk.eco-worthy.com/search?q=dc+to+dc+charger' } },
-    { item: 'Mains charger', spec: 'Victron Blue Smart IP65 · 12/25', qtyN: 1, guide: [110, 190], shop: 'victron', href: 'https://www.12voltplanet.co.uk/victron.html',
-      mid: { spec: 'Smart mains charger · 20A', guide: [60, 110], shop: '12vp', href: 'https://www.12voltplanet.co.uk/battery-chargers.html' },
+    { item: 'Mains charger', spec: 'Victron Blue Smart IP65 · 12/25', qtyN: 1, guide: [110, 190], shop: 'amazon', href: 'https://www.amazon.co.uk/s?k=victron+blue+smart+ip65+charger',
+      mid: { spec: 'Smart mains charger · 20A', guide: [60, 110], shop: 'renogy', href: 'https://uk.renogy.com/search?q=ac+battery+charger' },
       budget: { spec: 'Generic smart charger · 20A', guide: [40, 85], shop: 'amazon', href: 'https://www.amazon.co.uk/s?k=smart+battery+charger+12v+20a' } },
-    { item: 'Battery monitor', spec: 'Victron SmartShunt · 500A', qtyN: 1, guide: [90, 130], shop: 'victron', href: 'https://www.12voltplanet.co.uk/victron.html',
+    { item: 'Battery monitor', spec: 'Victron SmartShunt · 500A', qtyN: 1, guide: [90, 130], shop: 'amazon', href: 'https://www.amazon.co.uk/s?k=victron+smartshunt+500a',
       mid: { spec: 'Renogy 500A shunt monitor', guide: [50, 90], shop: 'renogy', href: 'https://uk.renogy.com/search?q=battery+monitor' },
       budget: { spec: 'Generic LCD shunt monitor', guide: [25, 55], shop: 'amazon', href: 'https://www.amazon.co.uk/s?k=battery+monitor+shunt' } },
-    { item: 'Isolator + busbars', spec: 'Master cut-off · pos/neg pair', qtyN: 1, guide: [30, 70], shop: '12vp', href: 'https://www.12voltplanet.co.uk/power-distribution.html', budget: { guide: [20, 45], shop: 'amazon', href: 'https://www.amazon.co.uk/s?k=12v+battery+isolator+switch+busbar' } },
-    { item: 'Blade fuse block', spec: `${totals.branches.length} circuits + spares · ${Math.max(6, totals.branches.length + 2)}-way`, qtyN: 1, guide: [15, 35], shop: '12vp', href: 'https://www.12voltplanet.co.uk/power-distribution.html' },
+    { item: 'Isolator + busbars', spec: 'Master cut-off · pos/neg pair', qtyN: 1, guide: [30, 70], shop: 'amazon', href: 'https://www.amazon.co.uk/s?k=battery+isolator+switch+busbar+12v', budget: { guide: [20, 45], shop: 'amazon', href: 'https://www.amazon.co.uk/s?k=12v+battery+isolator+switch+busbar' } },
+    { item: 'Blade fuse block', spec: `${totals.branches.length} circuits + spares · ${Math.max(6, totals.branches.length + 2)}-way`, qtyN: 1, guide: [15, 35], shop: 'amazon', href: `https://www.amazon.co.uk/s?k=${Math.max(6, totals.branches.length + 2)}+way+blade+fuse+box+12v` },
   ]
   const supplyRows: BomRow[] = [
     ...Object.entries(totals.cableMetres).sort(([a], [b]) => Number(b) - Number(a)).map(([gauge, metres]): BomRow => ({
@@ -441,19 +459,19 @@ export default function Page() {
       spec: `${Number(gauge) === totals.mainCable.size ? 'Main + branches' : 'Branches'} · red + black · ${metres}m`,
       qtyN: 1,
       guide: cableGuide(Number(gauge), metres),
-      shop: '12vp',
-      href: 'https://www.12voltplanet.co.uk/cable.html',
+      shop: 'amazon',
+      href: `https://www.amazon.co.uk/s?k=${gauge}mm2+tri-rated+cable`,
     })),
-    { item: 'MEGA fuse + holder', spec: `≤300mm from battery + · ${totals.mainFuseA}A`, qtyN: 1, guide: [15, 30], shop: '12vp', href: 'https://www.12voltplanet.co.uk/power-distribution.html' },
+    { item: 'MEGA fuse + holder', spec: `≤300mm from battery + · ${totals.mainFuseA}A`, qtyN: 1, guide: [15, 30], shop: 'amazon', href: `https://www.amazon.co.uk/s?k=mega+fuse+${totals.mainFuseA}a+holder` },
     ...(totals.inverterSupply
       ? [
-          { item: 'Inverter DC supply cable', spec: `${totals.inverterSupply.cable.size}mm² heavy-duty · ${Math.round(totals.inverterSupply.amps)}A draw · ≤${INVERTER_RUN_M}m run`, qtyN: 1, guide: cableGuide(totals.inverterSupply.cable.size, INVERTER_RUN_M * 2), shop: '12vp' as RetailerKey, href: 'https://www.12voltplanet.co.uk/cable.html' },
-          { item: 'Inverter high-current fuse', spec: `${totals.inverterSupply.fuseA}A ${totals.inverterSupply.fuseType} · ≤300mm from battery +`, qtyN: 1, guide: [18, 45] as [number, number], shop: '12vp' as RetailerKey, href: 'https://www.12voltplanet.co.uk/power-distribution.html' },
+          { item: 'Inverter DC supply cable', spec: `${totals.inverterSupply.cable.size}mm² heavy-duty · ${Math.round(totals.inverterSupply.amps)}A draw · ≤${INVERTER_RUN_M}m run`, qtyN: 1, guide: cableGuide(totals.inverterSupply.cable.size, INVERTER_RUN_M * 2), shop: 'amazon' as RetailerKey, href: `https://www.amazon.co.uk/s?k=${totals.inverterSupply.cable.size}mm2+battery+inverter+cable` },
+          { item: 'Inverter high-current fuse', spec: `${totals.inverterSupply.fuseA}A ${totals.inverterSupply.fuseType} · ≤300mm from battery +`, qtyN: 1, guide: [18, 45] as [number, number], shop: 'amazon' as RetailerKey, href: `https://www.amazon.co.uk/s?k=${totals.inverterSupply.fuseA}a+anl+fuse+holder` },
         ]
       : []),
-    { item: 'Tinned copper lugs', spec: `${totals.mainCable.size}mm² main run · ×4`, qtyN: 1, guide: [2, 6], shop: '12vp', href: 'https://www.12voltplanet.co.uk/terminals-connectors.html' },
+    { item: 'Tinned copper lugs', spec: `${totals.mainCable.size}mm² main run · ×4`, qtyN: 1, guide: [2, 6], shop: 'amazon', href: `https://www.amazon.co.uk/s?k=${totals.mainCable.size}mm2+copper+tube+lugs` },
     ...(branchFuseSummary ? [{ item: 'Blade fuses', spec: `1.25× circuit load · ${branchFuseSummary}`, qtyN: 1, guide: [5, 12] as [number, number], shop: 'amazon' as RetailerKey, href: 'https://www.amazon.co.uk/s?k=automotive+blade+fuse+assortment' }] : []),
-    ...(hasAc ? [{ item: 'AC consumer unit', spec: 'RCD + 2.5mm² 3-core flex', qtyN: 1, guide: [60, 120] as [number, number], shop: 'screwfix' as RetailerKey, href: 'https://www.screwfix.com/search?search=garage+consumer+unit' }] : []),
+    ...(hasAc ? [{ item: 'AC consumer unit', spec: 'RCD + 2.5mm² 3-core flex', qtyN: 1, guide: [60, 120] as [number, number], shop: 'amazon' as RetailerKey, href: 'https://www.amazon.co.uk/s?k=garage+consumer+unit+rcd' }] : []),
   ]
   const rowVariant = (r: BomRow) => (tier !== 'premium' && r[tier] ? r[tier] : undefined)
   const rowSpec = (r: BomRow) => rowVariant(r)?.spec ?? r.spec
@@ -462,6 +480,75 @@ export default function Page() {
   const rowHref = (r: BomRow) => rowVariant(r)?.href ?? r.href ?? RETAILERS[rowShop(r)].href
   const estLow = [...coreRows, ...supplyRows].reduce((s, r) => s + rowGuide(r)[0] * r.qtyN, 0)
   const estHigh = [...coreRows, ...supplyRows].reduce((s, r) => s + rowGuide(r)[1] * r.qtyN, 0)
+
+  // One renderer for both BOM panels — reused for the free teaser rows and
+  // the gated grid so the table markup never forks.
+  const renderBomTable = (title: string, detailHeader: string, rows: BomRow[]) => (
+    <div className="overflow-hidden rounded-xl border border-white/[0.07]">
+      <div className="border-b border-white/[0.07] bg-slate-950/40 px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-amber-300">{title}</div>
+      <table className="w-full text-left text-xs">
+        <thead className="text-[10px] uppercase tracking-wider text-slate-500">
+          <tr><th className="px-4 py-2.5">Item</th><th className="px-4 py-2.5">{detailHeader}</th><th className="px-4 py-2.5">Guide</th><th className="px-4 py-2.5">Buy</th></tr>
+        </thead>
+        <tbody className="divide-y divide-white/[0.06] text-slate-300">
+          {rows.map((row) => (
+            <tr key={row.item}>
+              <td className="px-4 py-2.5 text-slate-200">{row.item}</td>
+              <td className="px-4 py-2.5 text-slate-400">{rowSpec(row)}</td>
+              <td className="px-4 py-2.5 text-amber-300">£{rowGuide(row)[0]}–{rowGuide(row)[1]}</td>
+              <td className="px-4 py-2.5">
+                <a {...affiliateProps(rowHref(row), row.item, 'bom')} className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-amber-400/30 bg-amber-400/[0.08] px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-amber-300 transition hover:border-amber-400/60 hover:bg-amber-400/[0.16] hover:text-amber-200">
+                  {RETAILERS[rowShop(row)].name} <ExternalLink className="size-3" />
+                </a>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+
+  // Partner strip, branch schedule and footnote — rendered once, then either
+  // shown plainly (unlocked) or inside the blurred gate region.
+  const bomExtras = (
+    <>
+      <div className="mt-5 flex flex-col items-start justify-between gap-3 rounded-xl border border-amber-400/20 bg-amber-400/[0.05] px-4 py-3.5 sm:flex-row sm:items-center">
+        <p className="text-xs leading-5 text-slate-400"><span className="font-semibold text-amber-300">Hardware partner — Eco-Worthy.</span> Budget-friendly LiFePO4 batteries, solar kits, MPPTs and DC-DC chargers covering most of this list.</p>
+        <a {...affiliateProps(ECOWORTHY_URL, 'ecoworthy-partner', 'bom-cta')} className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-amber-400 px-3.5 py-2 text-xs font-bold text-slate-950 transition hover:bg-amber-300">
+          Shop the kit <ExternalLink className="size-3.5" />
+        </a>
+      </div>
+      {totals.branches.length > 0 && (
+        <div className="mt-5 overflow-hidden rounded-xl border border-white/[0.07]">
+          <div className="border-b border-white/[0.07] bg-slate-950/40 px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-amber-300">Branch circuit schedule — {totals.branches.length} live circuits</div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="text-[10px] uppercase tracking-wider text-slate-500">
+                <tr><th className="px-4 py-2.5">Circuit</th><th className="px-4 py-2.5">Load</th><th className="px-4 py-2.5">Wire</th><th className="px-4 py-2.5">Fuse</th><th className="px-4 py-2.5">Cable needed</th></tr>
+              </thead>
+              <tbody className="divide-y divide-white/[0.06] text-slate-300">
+                {totals.branches.map((b) => (
+                  <tr key={b.name}>
+                    <td className="px-4 py-2.5 font-medium text-slate-200">{b.name}</td>
+                    <td className="px-4 py-2.5 text-slate-400">{b.amps.toFixed(1)}A</td>
+                    <td className="px-4 py-2.5 text-amber-300">{b.wireMm2}mm²</td>
+                    <td className="px-4 py-2.5 text-amber-300">{b.fuseA}A blade</td>
+                    <td className="px-4 py-2.5 text-slate-400">{b.metres}m</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+      <div className="mt-4 rounded-xl border border-white/[0.07] bg-slate-950/30 p-4">
+        <div className="flex items-start gap-3">
+          <Info className="mt-0.5 size-4 shrink-0 text-amber-400" />
+          <p className="text-xs leading-5 text-slate-400">Cable lengths include positive and negative runs ({mainCableMetres}m on the main feed). Add your own margin for routing around the van, grommets, heat-shrink and a few spare fuses. Guide prices are estimates — compare suppliers before buying. Some links are affiliate links: we may earn a commission at no extra cost to you, which keeps the tool free.</p>
+        </div>
+      </div>
+    </>
+  )
 
   // The spec only exists once there's real demand — every other field has a
   // sane default, so a build with no active loads is "still configuring".
@@ -1028,15 +1115,24 @@ export default function Page() {
               <h2 className="text-lg font-semibold text-white">Your system, drawn live</h2>
               <p className="mt-2 max-w-3xl text-xs leading-5 text-slate-500">Single-line diagram generated from your configuration — cable sizes, fuse ratings and branch circuits update as you change the load list.</p>
             </div>
-            <CircuitBoard className="size-5 shrink-0 text-amber-400" />
+            {unlocked ? (
+              <span className="flex shrink-0 items-center gap-1.5 rounded-full border border-emerald-400/25 bg-emerald-400/10 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-emerald-300"><Check className="size-3" /> Unlocked</span>
+            ) : (
+              <CircuitBoard className="size-5 shrink-0 text-amber-400" />
+            )}
           </div>
-          <div className="mt-6 overflow-x-auto rounded-xl border border-white/[0.07] bg-slate-950/40 p-4">
-            <Schematic sizing={totals} state={state} onPick={setGuideId} />
+          <div className={unlocked ? 'mt-6' : 'relative mt-6 max-h-[560px] overflow-hidden rounded-xl'}>
+            <div inert={!unlocked} aria-hidden={!unlocked} className={unlocked ? '' : 'pointer-events-none select-none blur-[6px]'}>
+              <div className="overflow-x-auto rounded-xl border border-white/[0.07] bg-slate-950/40 p-4">
+                <Schematic sizing={totals} state={state} onPick={setGuideId} />
+              </div>
+              <p className="mt-3 flex items-center gap-2 text-[11px] text-slate-500">
+                <Info className="size-3.5 shrink-0 text-amber-400" />
+                Click any component marked ⓘ — MPPT, DC-DC, fuse block, inverter, shunt — for an exploded view with terminal-by-terminal wiring steps.
+              </p>
+            </div>
+            {!unlocked && <UnlockGate section="schematic" onUnlock={openCheckout} />}
           </div>
-          <p className="mt-3 flex items-center gap-2 text-[11px] text-slate-500">
-            <Info className="size-3.5 shrink-0 text-amber-400" />
-            Click any component marked ⓘ — MPPT, DC-DC, fuse block, inverter, shunt — for an exploded view with terminal-by-terminal wiring steps.
-          </p>
         </section>
 
         <section id="bom" className="print-protected mt-14 rounded-2xl border border-white/[0.08] bg-[#111822] p-6">
@@ -1046,7 +1142,11 @@ export default function Page() {
               <h2 className="text-lg font-semibold text-white">Everything you need to buy</h2>
               <p className="mt-2 max-w-3xl text-xs leading-5 text-slate-500">Quantities update with your load list. Branch circuits assume a typical one-way run of {state.branchRun}m — adjust it below to match your van.</p>
             </div>
-            <ClipboardList className="size-5 shrink-0 text-amber-400" />
+            {unlocked ? (
+              <span className="flex shrink-0 items-center gap-1.5 rounded-full border border-emerald-400/25 bg-emerald-400/10 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-emerald-300"><Check className="size-3" /> Unlocked</span>
+            ) : (
+              <ClipboardList className="size-5 shrink-0 text-amber-400" />
+            )}
           </div>
           <div className="mt-5 flex flex-wrap items-end gap-x-6 gap-y-4">
             <label className="block max-w-xs text-xs text-slate-400">
@@ -1077,86 +1177,24 @@ export default function Page() {
             <Info className="mt-0.5 size-3.5 shrink-0 text-slate-500" />
             Capacities, panel counts and fuse ratings are rounded up to the nearest available retail size — real-world quantities step up slightly from the exact calculated figures. That headroom is deliberate, not an error.
           </p>
-          <div className="mt-6 grid gap-5 lg:grid-cols-2">
-            <div className="overflow-hidden rounded-xl border border-white/[0.07]">
-              <div className="border-b border-white/[0.07] bg-slate-950/40 px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-amber-300">Core system</div>
-              <table className="w-full text-left text-xs">
-                <thead className="text-[10px] uppercase tracking-wider text-slate-500">
-                  <tr><th className="px-4 py-2.5">Item</th><th className="px-4 py-2.5">Spec</th><th className="px-4 py-2.5">Guide</th><th className="px-4 py-2.5">Buy</th></tr>
-                </thead>
-                <tbody className="divide-y divide-white/[0.06] text-slate-300">
-                  {coreRows.map((row) => (
-                    <tr key={row.item}>
-                      <td className="px-4 py-2.5 text-slate-200">{row.item}</td>
-                      <td className="px-4 py-2.5 text-slate-400">{rowSpec(row)}</td>
-                      <td className="px-4 py-2.5 text-amber-300">£{rowGuide(row)[0]}–{rowGuide(row)[1]}</td>
-                      <td className="px-4 py-2.5">
-                        <a {...affiliateProps(rowHref(row), row.item, 'bom')} className="inline-flex items-center gap-1 font-medium text-slate-300 transition hover:text-amber-300">
-                          {RETAILERS[rowShop(row)].name} <ExternalLink className="size-3" />
-                        </a>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <div className="overflow-hidden rounded-xl border border-white/[0.07]">
-              <div className="border-b border-white/[0.07] bg-slate-950/40 px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-amber-300">Cable, fuses & terminations</div>
-              <table className="w-full text-left text-xs">
-                <thead className="text-[10px] uppercase tracking-wider text-slate-500">
-                  <tr><th className="px-4 py-2.5">Item</th><th className="px-4 py-2.5">Detail</th><th className="px-4 py-2.5">Guide</th><th className="px-4 py-2.5">Buy</th></tr>
-                </thead>
-                <tbody className="divide-y divide-white/[0.06] text-slate-300">
-                  {supplyRows.map((row) => (
-                    <tr key={row.item}>
-                      <td className="px-4 py-2.5 text-slate-200">{row.item}</td>
-                      <td className="px-4 py-2.5 text-slate-400">{rowSpec(row)}</td>
-                      <td className="px-4 py-2.5 text-amber-300">£{rowGuide(row)[0]}–{rowGuide(row)[1]}</td>
-                      <td className="px-4 py-2.5">
-                        <a {...affiliateProps(rowHref(row), row.item, 'bom')} className="inline-flex items-center gap-1 font-medium text-slate-300 transition hover:text-amber-300">
-                          {RETAILERS[rowShop(row)].name} <ExternalLink className="size-3" />
-                        </a>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <div className="mt-5 flex flex-col items-start justify-between gap-3 rounded-xl border border-amber-400/20 bg-amber-400/[0.05] px-4 py-3.5 sm:flex-row sm:items-center">
-            <p className="text-xs leading-5 text-slate-400"><span className="font-semibold text-amber-300">Hardware partner — Eco-Worthy.</span> Budget-friendly LiFePO4 batteries, solar kits, MPPTs and DC-DC chargers covering most of this list.</p>
-            <a {...affiliateProps(ECOWORTHY_URL, 'ecoworthy-partner', 'bom-cta')} className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-amber-400 px-3.5 py-2 text-xs font-bold text-slate-950 transition hover:bg-amber-300">
-              Shop the kit <ExternalLink className="size-3.5" />
-            </a>
-          </div>
-          {totals.branches.length > 0 && (
-            <div className="mt-5 overflow-hidden rounded-xl border border-white/[0.07]">
-              <div className="border-b border-white/[0.07] bg-slate-950/40 px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-amber-300">Branch circuit schedule — {totals.branches.length} live circuits</div>
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
-                  <thead className="text-[10px] uppercase tracking-wider text-slate-500">
-                    <tr><th className="px-4 py-2.5">Circuit</th><th className="px-4 py-2.5">Load</th><th className="px-4 py-2.5">Wire</th><th className="px-4 py-2.5">Fuse</th><th className="px-4 py-2.5">Cable needed</th></tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/[0.06] text-slate-300">
-                    {totals.branches.map((b) => (
-                      <tr key={b.name}>
-                        <td className="px-4 py-2.5 font-medium text-slate-200">{b.name}</td>
-                        <td className="px-4 py-2.5 text-slate-400">{b.amps.toFixed(1)}A</td>
-                        <td className="px-4 py-2.5 text-amber-300">{b.wireMm2}mm²</td>
-                        <td className="px-4 py-2.5 text-amber-300">{b.fuseA}A blade</td>
-                        <td className="px-4 py-2.5 text-slate-400">{b.metres}m</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+          {!unlocked && (
+            <div className="mt-6">
+              {renderBomTable('Core system — free preview', 'Spec', coreRows.slice(0, 3))}
+              <p className="mt-2.5 flex items-center gap-1.5 text-[10px] text-slate-500">
+                <Lock className="size-3 shrink-0 text-amber-400" />
+                Showing 3 of {coreRows.length + supplyRows.length} line items — buy links stay live; unlock for the full component schedule.
+              </p>
             </div>
           )}
-          <div className="mt-4 rounded-xl border border-white/[0.07] bg-slate-950/30 p-4">
-            <div className="flex items-start gap-3">
-              <Info className="mt-0.5 size-4 shrink-0 text-amber-400" />
-              <p className="text-xs leading-5 text-slate-400">Cable lengths include positive and negative runs ({mainCableMetres}m on the main feed). Add your own margin for routing around the van, grommets, heat-shrink and a few spare fuses. Guide prices are estimates — compare suppliers before buying. Some links are affiliate links: we may earn a commission at no extra cost to you, which keeps the tool free.</p>
+          <div className={unlocked ? 'mt-6' : 'relative mt-5 max-h-[560px] overflow-hidden rounded-xl'}>
+            <div inert={!unlocked} aria-hidden={!unlocked} className={unlocked ? '' : 'pointer-events-none select-none blur-[6px]'}>
+              <div className="grid gap-5 lg:grid-cols-2">
+                {renderBomTable('Core system', 'Spec', coreRows)}
+                {renderBomTable('Cable, fuses & terminations', 'Detail', supplyRows)}
+              </div>
+              {bomExtras}
             </div>
+            {!unlocked && <UnlockGate section="bom" onUnlock={openCheckout} />}
           </div>
         </section>
 
@@ -1499,6 +1537,34 @@ export default function Page() {
 
       <MobileCtaBar ready={specReady} summary={stickySummary} onAction={handleStickyCta} />
     </main>
+  )
+}
+
+// Paywall overlay for the gated schematic + BOM. The blurred content beneath
+// stays in the DOM (inert + aria-hidden) as a teaser; the real entitlement is
+// Stripe-verified — the PDF and the on-page unlock both require a paid session.
+function UnlockGate({ section, onUnlock }: { section: 'schematic' | 'bom'; onUnlock: () => void }) {
+  return (
+    <div className="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-[#0b0f16]/70 p-4">
+      <div className="w-full max-w-sm text-center">
+        <span className="mx-auto grid size-11 place-items-center rounded-xl bg-amber-400 text-slate-950 shadow-lg shadow-amber-500/25">
+          <Lock className="size-5" />
+        </span>
+        <p className="mt-4 text-[10px] font-bold uppercase tracking-[.18em] text-amber-400">Pro build detail</p>
+        <h3 className="mt-1.5 text-lg font-semibold tracking-tight text-white">The rest of your build is generated, not generic</h3>
+        <p className="mt-2 text-xs leading-5 text-slate-400">Live wiring diagram, the complete component schedule and a printable workshop PDF — all built from your exact configuration.</p>
+        <button
+          onClick={() => {
+            trackEvent('paywall_cta_click', { section })
+            onUnlock()
+          }}
+          className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-amber-400 px-5 py-3.5 text-sm font-bold leading-snug text-slate-950 shadow-lg shadow-amber-500/20 transition hover:bg-amber-300"
+        >
+          Unlock Full Wiring Diagram &amp; Complete Component Schedule — £7.99 <ArrowRight className="size-4 shrink-0" />
+        </button>
+        <p className="mt-3 text-[10px] leading-4 text-slate-500">Secure Stripe checkout · instant PDF + on-page unlock</p>
+      </div>
+    </div>
   )
 }
 

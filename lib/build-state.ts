@@ -29,6 +29,9 @@ export const DEFAULT_STATE: BuildState = {
 }
 
 export const STORAGE_KEY = 'vanspark-build-v1'
+// Set after /api/verify confirms a paid Stripe session — persists the
+// on-page unlock of the schematic + BOM across visits for buyers.
+export const UNLOCK_KEY = 'vanspark-unlocked-v1'
 export const URL_PARAM = 'build'
 
 const SEASONS = ['Summer', 'Spring / Autumn', 'Winter'] as const
