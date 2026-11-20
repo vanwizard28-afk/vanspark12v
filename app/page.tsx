@@ -260,11 +260,11 @@ export default function Page() {
           return downloadBlueprint(paid, sizeSystem(paid)).then(() => data)
         })
         .then((data) => {
-          trackEvent('purchase', { value: 7.99, currency: 'GBP' })
+          trackEvent('purchase', { value: 9.99, currency: 'GBP' })
           trackEvent('payment_success')
           // Google Ads conversion — session id dedupes refreshes, buyer email
           // feeds enhanced conversions (gtag hashes it before sending).
-          trackConversion({ value: 7.99, currency: 'GBP', transactionId: sessionId, email: data.email })
+          trackConversion({ value: 9.99, currency: 'GBP', transactionId: sessionId, email: data.email })
         })
         .catch(() => setBlueprintOpen(true))
     } else if (purchase === 'cancelled') {
@@ -276,7 +276,7 @@ export default function Page() {
   // covers preview clicks, the hero/sticky CTAs and the cancelled-return path.
   useEffect(() => {
     if (blueprintOpen) {
-      trackEvent('view_item', { value: 7.99, currency: 'GBP', item_name: 'VanSpark 12V Pro Build Blueprint' })
+      trackEvent('view_item', { value: 9.99, currency: 'GBP', item_name: 'VanSpark 12V Pro Build Blueprint' })
       if (!previewTrackedRef.current) {
         previewTrackedRef.current = true
         trackEvent('pdf_preview_viewed', { source: 'modal' })
@@ -367,13 +367,13 @@ export default function Page() {
     setDownloading(true)
     setCheckoutError(false)
     trackEvent('blueprint_click', { daily_wh: Math.round(totals.dailyWh), inverter_w: totals.inverterW })
-    trackEvent('begin_checkout', { value: 7.99, currency: 'GBP' })
-    trackEvent('purchase_clicked', { value: 7.99, currency: 'GBP' })
+    trackEvent('begin_checkout', { value: 9.99, currency: 'GBP' })
+    trackEvent('purchase_clicked', { value: 9.99, currency: 'GBP' })
     try {
       const res = await fetch('/api/checkout', { method: 'POST' })
       const { url } = await res.json().catch(() => ({}))
       if (res.ok && url) {
-        trackEvent('stripe_checkout_reached', { value: 7.99, currency: 'GBP' })
+        trackEvent('stripe_checkout_reached', { value: 9.99, currency: 'GBP' })
         window.location.href = url
         return
       }
@@ -659,7 +659,7 @@ export default function Page() {
               <span className="flex items-center gap-2"><Check className="size-4 text-emerald-400" /> Shareable builds</span>
             </div>
             <button onClick={openCheckout} className="mt-8 inline-flex items-center gap-2 rounded-xl bg-amber-400 px-6 py-3.5 text-sm font-bold text-slate-950 shadow-lg shadow-amber-500/20 transition hover:bg-amber-300">
-              Get your personalised blueprint · £7.99 <ArrowRight className="size-4" />
+              Get your personalised blueprint · £9.99 <ArrowRight className="size-4" />
             </button>
           </div>
           <div className="relative overflow-hidden rounded-2xl border border-amber-400/20 bg-gradient-to-br from-[#141d2b] to-[#0c1119] p-6 shadow-2xl shadow-black/20">
@@ -671,7 +671,7 @@ export default function Page() {
 
         <div className="print-notice" role="note">
           <h2 className="text-xl font-bold">Official VanSpark 12V Pro Blueprint</h2>
-          <p className="mt-3">Thanks for printing — the on-screen grids are optimised for live use, so they print as a summary only. For the full build-ready documentation, formatted for the workshop and generated from your exact configuration, the £7.99 PDF Blueprint has everything below.</p>
+          <p className="mt-3">Thanks for printing — the on-screen grids are optimised for live use, so they print as a summary only. For the full build-ready documentation, formatted for the workshop and generated from your exact configuration, the £9.99 PDF Blueprint has everything below.</p>
           <p className="mt-3 font-semibold">Includes the Master Wiring Schematic, Full Circuit Fuse/Cable Schedule, Equipment BOM, and Safety &amp; Compliance Checklist.</p>
         </div>
 
@@ -984,7 +984,7 @@ export default function Page() {
                 </div>
               </div>
               <button onClick={openCheckout} className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-amber-400 px-5 py-3 text-xs font-bold text-slate-950 shadow-lg shadow-amber-500/20 transition hover:bg-amber-300">
-                Get blueprint · £7.99 <ArrowRight className="size-4" />
+                Get blueprint · £9.99 <ArrowRight className="size-4" />
               </button>
             </div>
           </section>
@@ -1029,7 +1029,7 @@ export default function Page() {
                 <p className="mt-3 max-w-md text-sm leading-6 text-slate-400">Get the complete printable blueprint with wiring diagrams, fuse schedules, component links, and an installation checklist.</p>
               </div>
               <a href="#download" className="mt-8 flex w-full items-center justify-between rounded-xl bg-amber-400 px-5 py-4 text-sm font-bold text-slate-950 shadow-lg shadow-amber-500/10 transition hover:bg-amber-300 sm:w-fit sm:min-w-[330px]">
-                <span>Get your blueprint · £7.99</span>
+                <span>Get your blueprint · £9.99</span>
                 <ArrowRight className="size-4" />
               </a>
             </div>
@@ -1302,7 +1302,7 @@ export default function Page() {
               <p className="mt-2 text-[10px] text-slate-500">Structure of the finished document — figures above are live from your build.</p>
             </div>
             <button onClick={() => setBlueprintOpen(true)} className="mt-5 inline-flex items-center gap-2 rounded-lg bg-amber-400 px-4 py-2.5 text-sm font-bold text-slate-950 transition hover:bg-amber-300">
-              Preview the £7.99 blueprint <ArrowRight className="size-4" />
+              Preview the £9.99 blueprint <ArrowRight className="size-4" />
             </button>
             <script
               type="application/ld+json"
@@ -1315,7 +1315,7 @@ export default function Page() {
                   brand: { '@type': 'Brand', name: 'VanSpark 12V Pro' },
                   offers: {
                     '@type': 'Offer',
-                    price: '7.99',
+                    price: '9.99',
                     priceCurrency: 'GBP',
                     availability: 'https://schema.org/InStock',
                     url: 'https://vanspark.co.uk/#download',
@@ -1329,7 +1329,7 @@ export default function Page() {
             <h3 className="mt-2 text-xl font-semibold text-white">Download the full plan</h3>
             <p className="mt-2 text-xs leading-5 text-slate-500">Stripe-secured purchase for the complete PDF blueprint.</p>
             <button onClick={() => setBlueprintOpen(true)} className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-amber-400 px-4 py-3.5 text-center text-sm font-bold leading-snug text-slate-950 hover:bg-amber-300">
-              Get Your Personalised Electrical Blueprint – £7.99
+              Get Your Personalised Electrical Blueprint – £9.99
             </button>
             <p className="mt-3 text-center text-[11px] leading-5 text-slate-500">Your complete electrical design, organised into one professional, printable document. No need to manually copy down all your calculations, components and wiring information.</p>
           </div>
@@ -1369,7 +1369,7 @@ export default function Page() {
                   <div className="grid size-10 place-items-center rounded-lg bg-amber-400 text-slate-950"><ShoppingCart className="size-5" /></div>
                   <div>
                     <p className="text-sm font-semibold text-white">Professional electrical blueprint</p>
-                    <p className="text-xs text-slate-500">Instant PDF download · £7.99</p>
+                    <p className="text-xs text-slate-500">Instant PDF download · £9.99</p>
                   </div>
                 </div>
                 <ul className="mt-5 grid gap-2.5 text-sm text-slate-300">
@@ -1390,7 +1390,7 @@ export default function Page() {
                 disabled={downloading}
                 className="mt-5 w-full rounded-lg bg-amber-400 px-4 py-3 text-center text-sm font-bold leading-snug text-slate-950 transition hover:bg-amber-300 disabled:cursor-wait disabled:opacity-60"
               >
-                {downloading ? 'Redirecting to checkout…' : 'Get Your Personalised Electrical Blueprint – £7.99'}
+                {downloading ? 'Redirecting to checkout…' : 'Get Your Personalised Electrical Blueprint – £9.99'}
               </button>
               <p className="mt-3 text-center text-[11px] leading-5 text-slate-500">Your complete electrical design, organised into one professional, printable document. No need to manually copy down all your calculations, components and wiring information.</p>
               {checkoutError && (
@@ -1560,7 +1560,7 @@ function UnlockGate({ section, onUnlock }: { section: 'schematic' | 'bom'; onUnl
           }}
           className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-amber-400 px-5 py-3.5 text-sm font-bold leading-snug text-slate-950 shadow-lg shadow-amber-500/20 transition hover:bg-amber-300"
         >
-          Unlock Full Wiring Diagram &amp; Complete Component Schedule — £7.99 <ArrowRight className="size-4 shrink-0" />
+          Unlock Full Wiring Diagram &amp; Complete Component Schedule — £9.99 <ArrowRight className="size-4 shrink-0" />
         </button>
         <p className="mt-3 text-[10px] leading-4 text-slate-500">Secure Stripe checkout · instant PDF + on-page unlock</p>
       </div>

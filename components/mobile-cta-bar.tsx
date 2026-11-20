@@ -9,7 +9,7 @@ type Props = {
 }
 
 // Sticky bottom purchase bar for small viewports — the #download checkout
-// section sits far down the page, so this keeps the £7.99 blueprint one tap
+// section sits far down the page, so this keeps the £9.99 blueprint one tap
 // away on mobile. Hidden on lg+ where the in-page CTAs are already visible,
 // and print-protected so it never lands in a printout.
 export default function MobileCtaBar({ ready, summary, onAction }: Props) {
@@ -24,7 +24,7 @@ export default function MobileCtaBar({ ready, summary, onAction }: Props) {
               : 'border border-amber-400/30 bg-amber-400/[0.08] text-amber-300 hover:bg-amber-400/[0.14]'
           }`}
         >
-          {ready ? 'Get your blueprint · £7.99' : 'Configure your 12V system…'}
+          {ready ? 'Get your blueprint · £9.99' : 'Configure your 12V system…'}
           <ArrowRight className="size-4 shrink-0" />
         </button>
         <p className="mt-1.5 flex items-center justify-center gap-1.5 text-center text-[10px] text-slate-500">

@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-// POST /api/checkout — creates a Stripe Checkout Session for the £7.99
-// blueprint. Until STRIPE_SECRET_KEY + STRIPE_PRICE_ID are configured the
+// POST /api/checkout — creates a Stripe Checkout Session for the £9.99
+// blueprint. The amount is defined here as price_data so the code is the
+// single source of truth — a stale STRIPE_PRICE_ID can't drift out of sync
+// with the price shown in the UI. Until STRIPE_SECRET_KEY is configured the
 // route returns 503 and the client shows an error instead of the PDF.
 export async function POST(req: NextRequest) {
   // Trim — a trailing space/newline pasted into the Vercel env var silently
   // breaks Stripe auth.
   const secretKey = process.env.STRIPE_SECRET_KEY?.trim()
-  const priceId = process.env.STRIPE_PRICE_ID?.trim()
 
-  if (!secretKey || !priceId) {
+  if (!secretKey) {
     return NextResponse.json({ error: 'checkout_not_configured' }, { status: 503 })
   }
 
@@ -25,7 +26,16 @@ export async function POST(req: NextRequest) {
     const stripe = new Stripe(secretKey)
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
-      line_items: [{ price: priceId, quantity: 1 }],
+      line_items: [
+        {
+          quantity: 1,
+          price_data: {
+            currency: 'gbp',
+            unit_amount: 999,
+            product_data: { name: 'VanSpark 12V Pro Build Blueprint' },
+          },
+        },
+      ],
       // The client restores the build from localStorage on return, so the
       // URLs stay short — Stripe caps metadata at 500 chars and oversized
       // success/cancel URLs get rejected. The session id lets /api/verify
