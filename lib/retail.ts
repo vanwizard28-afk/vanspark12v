@@ -7,10 +7,7 @@ import { trackEvent } from './analytics'
 export const RETAILERS = {
   fogstar: { name: 'Fogstar', href: 'https://www.fogstar.co.uk/search?q=drift+lifepo4' },
   renogy: { name: 'Renogy UK', href: 'https://uk.renogy.com/search?q=lifepo4' },
-  victron: { name: 'Victron dealer', href: 'https://www.12voltplanet.co.uk/victron.html' },
   ecoworthy: { name: 'Eco-Worthy', href: 'https://uk.eco-worthy.com/search?q=lifepo4' },
-  '12vp': { name: '12 Volt Planet', href: 'https://www.12voltplanet.co.uk/' },
-  screwfix: { name: 'Screwfix', href: 'https://www.screwfix.com/' },
   amazon: { name: 'Amazon UK', href: 'https://www.amazon.co.uk/' },
 } as const
 
@@ -45,7 +42,8 @@ const AFFILIATE_TAGS: Record<string, string> = {
   'uk.eco-worthy.com': `sca_ref=${ECOWORTHY_REF}`,
   // Fogstar runs on GoAffPro — swap in your referral code once approved:
   // 'fogstar.co.uk': 'ref=YOUR_FOGSTAR_CODE',
-  // 12 Volt Planet: no published program — partnership via enquiry form only.
+  // 12 Volt Planet confirmed they run no affiliate programme — all their
+  // links were rerouted to tagged Amazon searches.
 }
 
 export function withUtm(href: string, campaign: string) {
