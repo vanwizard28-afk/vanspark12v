@@ -406,4 +406,282 @@ export const GUIDES: Guide[] = [
     buildIds: ['fridge', 'heater', 'lights', 'usb'],
     ctaLabel: 'Check your charging setup live',
   },
+  {
+    slug: 'campervan-fuse-box-guide',
+    title: 'Campervan 12V Fuse Box: How Distribution Actually Works',
+    metaTitle: 'Campervan Fuse Box Guide — 12V Blade Fuses & Bus Bars | VanSpark',
+    description: 'How to wire a campervan 12V fuse box: blade fuse sizing per circuit, busbars, the 1.25× rule, and why each branch gets its own fuse.',
+    intro: 'The fuse board is the least glamorous part of a van build and the part that stops it burning down. Every circuit that leaves your battery gets its own fuse, sized to the cable it protects — and once you understand that one rule, the rest is just tidy wiring.',
+    sections: [
+      {
+        heading: 'What the fuse board actually does',
+        body: [
+          'A 12V fuse box (blade fuse panel) splits the main battery feed into individual branch circuits — lights, pump, fridge, USB — each with its own fuse. The fuse sits in the positive leg, as close to the supply as practical.',
+          'The critical idea: a fuse protects the cable, not the appliance. If a 5A pump is wired in 1.5mm² cable that can carry 20A, the fuse must blow before the cable overheats — so fuses are sized to the smaller of (load × 1.25) and cable ampacity.',
+        ],
+      },
+      {
+        heading: 'Sizing each branch fuse',
+        table: {
+          head: ['Circuit', 'Typical load', 'Wire', 'Fuse'],
+          rows: [
+            ['LED lighting circuit', '2A', '1–1.5mm²', '5A'],
+            ['Water pump', '5A', '1.5mm²', '10A'],
+            ['USB / 12V sockets', '15A', '2.5mm²', '20A'],
+            ['Compressor fridge', '5A', '2.5mm²', '10A'],
+            ['Diesel heater', '8–10A', '2.5–4mm²', '15A'],
+            ['Roof vent fan', '3A', '1.5mm²', '5A'],
+          ],
+        },
+        body: [
+          'The 1.25× rule: fuse ≈ circuit load × 1.25, rounded up to the next standard blade size (5, 7.5, 10, 15, 20, 25, 30A). The branch schedule in the calculator does this per circuit automatically.',
+        ],
+      },
+      {
+        heading: 'Busbars and the return path',
+        body: [
+          'Heavy connections meet on busbars rather than stacking rings on battery terminals — positive busbar for feeds in, and the negative return path runs through the battery monitor shunt so it sees every amp.',
+          'Branch negatives can land on a common negative busbar or a dedicated return strip. Keep each fuse board\'s own negative return tidy — a shared earth point in the chassis is fine for small circuits but heavy returns should come back by cable.',
+        ],
+      },
+      {
+        heading: 'Mistakes that cause real problems',
+        list: [
+          'One big fuse feeding everything — a fault on a lighting circuit takes out the whole van',
+          'Fuse bigger than the cable can carry — the cable becomes the fuse',
+          'No fuse on the main battery feed — the 300mm rule applies here too',
+          'Mixing circuits onto one fuse "to save ways" — each branch is sized individually',
+          'Uninsulated positive busbar — a dropped spanner is a direct short',
+        ],
+      },
+    ],
+    faqs: [
+      ['What size fuse for a campervan 12V system?', 'Main feed: MEGA/ANL sized below your cable\'s ampacity (80–350A depending on inverter size). Branches: blade fuses at ~1.25× each circuit\'s load — the calculator lists them per circuit.'],
+      ['Where should the fuse box go in a campervan?', 'Close to the battery, somewhere dry and accessible — inside a seat base or cupboard wall is typical. The main fuse itself stays within 300mm of battery positive.'],
+      ['Blade fuses or breakers in a campervan?', 'Blade fuses for branch circuits (cheap, tiny, reliable). Resettable breakers make sense only as main isolators or on the solar panel input where you want a switch function anyway.'],
+    ],
+    buildIds: ['fridge', 'heater', 'lights', 'usb', 'pump'],
+    ctaLabel: 'See your full fuse schedule',
+  },
+  {
+    slug: 'campervan-shore-power-hookup',
+    title: 'Campervan Shore Power: How Mains Hookup Works in a Van',
+    metaTitle: 'Campervan Shore Power Explained — Mains Hookup & Charger | VanSpark',
+    description: 'How campervan shore power works: the inlet, consumer unit and RCD, battery charger sizing, and when a mains hookup is actually worth fitting.',
+    intro: 'Shore power is the third charging path most builds forget until they book a campsite. Plugged into a hookup post, mains electricity runs your 240V sockets and charges the leisure battery — but it is also the one part of the system where a mistake can be lethal, so it has its own rules.',
+    sections: [
+      {
+        heading: 'The three parts of a shore power system',
+        list: [
+          'Inlet — a recessed 16A commando socket on the van\'s side, connected to the site post with a standard orange hookup lead',
+          'Consumer unit — a small garage-style CU with an RCD and MCBs, exactly like a miniature house board',
+          'Mains charger — a 230V-to-12V battery charger that keeps the leisure bank topped up while plugged in',
+        ],
+        body: [
+          'Everything after the consumer unit is ordinary 230V wiring in 1.5mm² or 2.5mm² 3-core flex — to sockets, a battery charger, maybe a water heater. Everything before it must be rated for outdoor use and mechanically protected.',
+        ],
+      },
+      {
+        heading: 'The RCD is non-negotiable',
+        body: [
+          'A metal van body plus 230V makes earth faults deadly rather than annoying. The consumer unit must have a 30mA RCD covering every circuit — this is the part that needs a qualified person to install or at least inspect and test.',
+          'The 12V DC side of a van is a safe DIY path. The 230V side is the one place the sensible answer is "get it signed off" — many insurers and campsites expect it anyway.',
+        ],
+      },
+      {
+        heading: 'Sizing the mains charger',
+        table: {
+          head: ['Charger', 'Charge rate', 'Good for'],
+          rows: [
+            ['10–15A', '~150Wh per hour on hookup', 'Small AGM banks, occasional site stops'],
+            ['20–30A', '~300–400Wh per hour', 'Typical 150–300Ah lithium banks'],
+            ['40A+ (or inverter-charger)', '~500Wh+ per hour', 'Full-time vans, combi units like the MultiPlus'],
+          ],
+        },
+        body: [
+          'Check the charger has a LiFePO4 profile if you run lithium — older chargers terminate at 14.4V absorption into float, which is harmless for lithium but a proper profile charges faster. Victron Blue Smart IP65/IP22 are the usual picks.',
+        ],
+      },
+      {
+        heading: 'Do you actually need it?',
+        body: [
+          'If you tour site-to-site and stay a night at a time, shore power is a convenience. If you sit on one pitch for a week, it is the difference between rationing power and forgetting about it — one night on hookup fully recharges what solar struggles to replace in winter.',
+          'Many builds skip it entirely: a decent DC-DC plus 400W+ of solar covers most usage. The calculator shows your deficit per charging path so you can decide with numbers.',
+        ],
+      },
+    ],
+    faqs: [
+      ['Is campervan shore power safe to DIY?', 'The 12V side, yes. The 230V side should be installed or inspected by a qualified person — a metal van shell makes earth faults dangerous, and the RCD must be tested properly.'],
+      ['What size mains charger for a 200Ah lithium battery?', 'A 20–30A mains charger is the sweet spot — an evening on hookup replaces a full day\'s use. Match the profile to LiFePO4 (14.4V absorption, no equalisation).'],
+      ['Do campsites need a specific hookup lead?', 'Yes — a 16A CEE commando hookup cable, usually 15–25m of 2.5mm² orange arctic flex. Standard kit, and worth keeping the lead fully uncoiled under load.'],
+    ],
+    buildIds: ['fridge', 'heater', 'lights', 'usb'],
+    ctaLabel: 'Check your charging paths live',
+  },
+  {
+    slug: 'lifepo4-vs-agm-leisure-battery',
+    title: 'LiFePO4 vs AGM Leisure Battery: Which Is Right for a Campervan?',
+    metaTitle: 'LiFePO4 vs AGM Leisure Battery — Campervan Guide | VanSpark',
+    description: 'LiFePO4 vs AGM for a campervan: usable capacity, weight, cycle life, cold-weather charging and real cost per cycle — the numbers that decide it.',
+    intro: 'Five years ago this was a real debate. Today it is mostly arithmetic: lithium costs more per battery but less per usable kilowatt-hour over its life. There are still a few cases where AGM makes sense — this guide works through them honestly.',
+    sections: [
+      {
+        heading: 'The comparison that matters',
+        table: {
+          head: ['', 'LiFePO4', 'AGM / lead-acid'],
+          rows: [
+            ['Usable depth of discharge', '~80%', '~50%'],
+            ['Weight (usable 100Ah)', '~12kg', '~55kg'],
+            ['Cycle life', '3,000–5,000 cycles', '400–800 cycles'],
+            ['Charge voltage', '14.2–14.6V', '14.4–14.8V'],
+            ['Charges below 0°C?', 'No — needs heating or BMS cut-off', 'Yes (slowly)'],
+            ['Rough UK cost (usable 100Ah)', '£250–450', '£180–300'],
+          ],
+        },
+        body: [
+          'Read the first two rows together: a 200Ah AGM bank gives you the same usable 100Ah as a 100Ah lithium — at five times the weight. In a vehicle where every kilo is payload, that is the argument settled for most people.',
+        ],
+      },
+      {
+        heading: 'The cold-weather catch',
+        body: [
+          'LiFePO4 cells are damaged by charging below freezing — a decent BMS simply refuses, which means no solar or DC-DC charge on a frosty morning until the battery warms up. Heated models (Fogstar Drift class) build a heater into the case and solve it properly.',
+          'If you genuinely camp through winter, either budget for a heated battery, mount the bank inside the heated living space, or accept AGM\'s weight penalty. For three-season use it is a non-issue.',
+        ],
+      },
+      {
+        heading: 'Cost per cycle, not per battery',
+        body: [
+          'A £350 lithium bank rated for 4,000 cycles costs ~9p per cycle. A £200 AGM bank at 600 cycles costs ~33p per cycle — before counting the second bank\'s weight and the fact you buy it twice.',
+          'Cheap unbranded lithium is the one trap: a no-name LiFePO4 with a weak BMS can underdeliver the very cycle life that justifies the price. Stick to brands with a documented BMS rating — the BOM lists options per tier.',
+        ],
+      },
+      {
+        heading: 'When AGM is still the right answer',
+        list: [
+          'Very occasional use — a few weekends a year barely amortises lithium',
+          'Unheated storage in deep winter with regular sub-zero charging',
+          'Extremely tight budget where the upfront £150 saving genuinely matters',
+          'Drop-in replacement in an older build already wired and profiled for lead-acid',
+        ],
+      },
+    ],
+    faqs: [
+      ['Is LiFePO4 worth it in a campervan?', 'For anyone using the van regularly, yes — double the usable capacity per rated Ah, a quarter of the weight, and a lower cost per cycle despite the higher sticker price.'],
+      ['Can I charge LiFePO4 from my existing split charge system?', 'Not reliably — lithium wants ~14.4V and a Euro 6 smart alternator drops below that. A DC-DC charger with a lithium profile is effectively required.'],
+      ['How long does a LiFePO4 battery last in a campervan?', 'At 3,000+ cycles and typical use of one cycle every 2–3 days, expect 10–15+ years — the calendar life usually ends before the cycle life does.'],
+    ],
+    buildIds: ['fridge', 'heater', 'lights', 'usb'],
+    ctaLabel: 'Compare battery options on your build',
+  },
+  {
+    slug: 'victron-vs-renogy-campervan',
+    title: 'Victron vs Renogy for a Campervan: Where the Premium Actually Matters',
+    metaTitle: 'Victron vs Renogy Campervan — Honest Component Comparison | VanSpark',
+    description: 'Victron vs Renogy for a campervan electrical system: MPPTs, DC-DC chargers, monitors and app ecosystem — which components are worth the premium.',
+    intro: 'Every van build ends up asking the same question component by component: is the blue box worth double the price? The honest answer is "depends which component" — some Victron products are unambiguously better, and some categories are now a commodity where Renogy or even generic is fine.',
+    sections: [
+      {
+        heading: 'Where the comparison actually happens',
+        table: {
+          head: ['Component', 'Victron', 'Renogy', 'Verdict'],
+          rows: [
+            ['MPPT controller', 'SmartSolar 75/15–150/45', 'Rover 20–40A', 'Pay premium if you want the best tracking + app'],
+            ['DC-DC charger', 'Orion-Tr Smart 30A', 'DCC30S 30A', 'Victron for ignition detect; Renogy for built-in solar input'],
+            ['Battery monitor', 'SmartShunt 500A', '500A monitor', 'Both fine — Victron app is slicker'],
+            ['Inverter', 'Phoenix pure sine', 'Pure sine range', 'Budget fine for occasional kettle use'],
+            ['Mains charger', 'Blue Smart IP65/IP22', 'n/a', 'Victron dominates this niche'],
+          ],
+        },
+      },
+      {
+        heading: 'What the Victron premium buys',
+        body: [
+          'The VictronConnect app is the real differentiator — every Smart device reports into one interface: solar yield, DC-DC status, battery state. Once you have two Victron Smart products the third makes sense; the ecosystem compounds.',
+          'Tracking efficiency on SmartSolar MPPTs is genuinely a few percent better in low light, and the build quality/warranty network is the strongest in this space. On a full-time van those margins pay back.',
+        ],
+      },
+      {
+        heading: 'Where mid-range is the smart money',
+        body: [
+          'Renogy occupies the honest middle: proper support, decent app, prices typically 30–40% under Victron. The DCC30S DC-DC deserves a special mention — it takes a solar panel input directly, which can remove the MPPT from a small build entirely.',
+          'For a weekend build, mid-tier everything plus a decent lithium battery is usually the best £-per-adventure. The calculator\'s component tier switcher prices all three bands live.',
+        ],
+      },
+      {
+        heading: 'Where budget brands genuinely suffice',
+        list: [
+          'Inverters — a budget pure-sine unit runs a travel kettle fine',
+          'Fuse boards, busbars, isolators — a commodity: buy decent, unbranded is fine',
+          'Cable and lugs — spec matters (tri-rated, tinned copper), brand does not',
+          'Rigid solar panels — monocrystalline is a mature commodity; buy on watts-per-£ and warranty',
+        ],
+        body: [
+          'The one place not to go generic: the battery BMS and the DC-DC on a smart-alternator van — those two carry the whole system\'s reliability.',
+        ],
+      },
+    ],
+    faqs: [
+      ['Is Victron worth the money for a campervan?', 'For MPPT controllers and mains chargers, usually yes — better efficiency and the VictronConnect ecosystem. For inverters, monitors and wiring, mid-range brands are 90% of the experience at 60% of the price.'],
+      ['Is Renogy a good brand for campervan electrics?', 'Yes — the sensible mid-market choice. Proper UK support, a workable app, and the DCC30S\' combined DC-DC + solar input makes it a clever pick for compact builds.'],
+      ['Can I mix Victron and Renogy in one system?', 'Absolutely — most builds do. Match each component on merit: a Victron SmartSolar, a Renogy DC-DC and an Eco-Worthy battery coexist perfectly well. The tier switcher in the calculator mixes them per component.'],
+    ],
+    buildIds: ['fridge', 'heater', 'lights', 'usb', 'induction'],
+    ctaLabel: 'Compare the three tiers live',
+  },
+  {
+    slug: 'starlink-campervan-power',
+    title: 'Starlink in a Campervan: What It Really Costs Your Battery',
+    metaTitle: 'Starlink Campervan Power Use — Battery & 12V Guide | VanSpark',
+    description: 'How much power Starlink really uses in a campervan, what a day online costs your battery bank, and how to run it on 12V without an inverter.',
+    intro: 'Starlink has quietly become the biggest single electrical upgrade question in van life — a full working day online adds a fridge-sized load to a system that was never sized for it. Here is what it draws, what it costs your bank, and how to run it efficiently.',
+    sections: [
+      {
+        heading: 'The real power draw',
+        table: {
+          head: ['Kit', 'Running draw', 'A working day online'],
+          rows: [
+            ['Starlink Mini', '~20–40W', '~300Wh (8h)'],
+            ['Standard / Gen 3 actuated', '~40–75W', '~450Wh (8h)'],
+            ['High Performance', '~100–150W', '~900Wh+ (8h)'],
+          ],
+        },
+        body: [
+          'Snow-melt mode and the cold-start heater add 30–100W+ when active — that is the number that surprises people in winter. Disable snow-melt if you are parked in mild weather and manually clear the dish.',
+          'For comparison: a compressor fridge uses 400–600Wh/day. A Starlink working day is a second fridge on the roof.',
+        ],
+      },
+      {
+        heading: 'Running it on 12V (skip the inverter)',
+        body: [
+          'Running Starlink through an inverter wastes 15–20% in conversion plus the inverter\'s own idle draw — often 10–20W doing nothing. The Mini accepts USB-C PD (needs a proper 100W PD source or 12V boost converter), and aftermarket 12V supplies exist for the standard dish via PoE.',
+          'The efficient stack: 12V supply → dish, 12V/USB-C → laptop. No inverter on at all.',
+        ],
+      },
+      {
+        heading: 'What it does to your battery bank',
+        body: [
+          'Add a 400Wh Starlink day to a typical 900Wh weekend build and you have nearly doubled your daily demand — a 100Ah lithium bank that lasted two days now lasts one. Either the bank grows, the solar grows, or Starlink hours get rationed.',
+          'This is exactly the arithmetic the calculator is for: toggle the Starlink appliance on and watch the battery size, solar and DC-DC columns move. The digital nomad preset builds it in from the start.',
+        ],
+      },
+      {
+        heading: 'Ways to shrink the bill',
+        list: [
+          'Use the Mini for van life — it draws roughly half the standard dish',
+          'Schedule it: standby/sleep mode overnight saves 100–200Wh',
+          'Disable snow-melt unless it is actually snowing',
+          'Hotspot to it rather than running a separate router (another 5–10W saved)',
+          'Park with a clear northern sky (UK) — fewer obstructions, less re-acquiring',
+        ],
+      },
+    ],
+    faqs: [
+      ['How much power does Starlink use in a campervan?', 'Starlink Mini draws ~20–40W running (~300Wh for a working day); the standard dish draws ~40–75W (~450Wh) plus more if snow-melt runs. That is fridge-scale — plan for it like a second fridge.'],
+      ['Can Starlink run off a leisure battery?', 'Yes, easily — it is a pure capacity question. A working day adds ~300–450Wh (25–38Ah) to your daily draw; the calculator shows whether your bank and solar absorb that or not.'],
+      ['Do I need an inverter for Starlink?', 'Not for the Mini — it runs on USB-C PD from a proper 100W-capable source or 12V boost converter. Standard dishes can be converted to 12V via aftermarket PoE supplies, skipping inverter losses entirely.'],
+    ],
+    buildIds: ['starlink', 'laptop', 'fridge', 'lights', 'usb'],
+    ctaLabel: 'See Starlink\'s impact on your build',
+  },
 ]
