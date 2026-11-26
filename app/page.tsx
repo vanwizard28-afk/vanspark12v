@@ -1268,7 +1268,7 @@ export default function Page() {
                           >
                             Unlock Full Circuit Schedule &amp; Printable PDF Blueprint — £7.99 <ArrowRight className="size-4 shrink-0" />
                           </button>
-                          <p className="mt-2.5 text-[10px] leading-4 text-slate-500">Secure Stripe checkout · instant PDF + on-page unlock</p>
+                          <p className="mt-2.5 text-[10px] leading-4 text-slate-500">Winter offer — usually £9.99 · Secure Stripe checkout · instant PDF + on-page unlock</p>
                         </div>
                       </div>
                     </div>
@@ -1422,6 +1422,7 @@ export default function Page() {
             <button onClick={() => setBlueprintOpen(true)} className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-amber-400 px-4 py-3.5 text-center text-sm font-bold leading-snug text-slate-950 hover:bg-amber-300">
               Get Your Personalised Electrical Blueprint – £7.99
             </button>
+            <p className="mt-2 text-center text-[10px] font-bold uppercase tracking-wider text-amber-400">Winter offer — usually £9.99</p>
             <p className="mt-3 text-center text-[11px] leading-5 text-slate-500">Your complete electrical design, organised into one professional, printable document. No need to manually copy down all your calculations, components and wiring information.</p>
           </div>
         </section>
@@ -1460,7 +1461,7 @@ export default function Page() {
                   <div className="grid size-10 place-items-center rounded-lg bg-amber-400 text-slate-950"><ShoppingCart className="size-5" /></div>
                   <div>
                     <p className="text-sm font-semibold text-white">Professional electrical blueprint</p>
-                    <p className="text-xs text-slate-500">Instant PDF download · £7.99</p>
+                    <p className="text-xs text-slate-500">Instant PDF download · <span className="line-through">£9.99</span> £7.99 winter offer</p>
                   </div>
                 </div>
                 <ul className="mt-5 grid gap-2.5 text-sm text-slate-300">
@@ -1671,7 +1672,7 @@ function UnlockGate({ section, onUnlock }: { section: 'schematic' | 'bom'; onUnl
         >
           Unlock Full Wiring Diagram &amp; Complete Component Schedule — £7.99 <ArrowRight className="size-4 shrink-0" />
         </button>
-        <p className="mt-3 text-[10px] leading-4 text-slate-500">Secure Stripe checkout · instant PDF + on-page unlock</p>
+        <p className="mt-3 text-[10px] leading-4 text-slate-500">Winter offer — usually £9.99 · Secure Stripe checkout · instant PDF + on-page unlock</p>
       </div>
     </div>
   )
