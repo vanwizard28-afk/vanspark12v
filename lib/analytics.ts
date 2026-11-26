@@ -14,9 +14,14 @@ export function trackEvent(action: string, params: Record<string, unknown> = {})
 // Google Ads conversion — a plain trackEvent('purchase') never reaches Ads;
 // only a 'conversion' event with send_to counts for Smart Bidding. The
 // 'AW-…/label' value comes from Ads → Goals → Conversions → the purchase
-// action → Tag setup, configured via NEXT_PUBLIC_ADS_CONVERSION.
-// No-ops until that's set, so this is safe to ship before the label exists.
-const ADS_CONVERSION = process.env.NEXT_PUBLIC_ADS_CONVERSION
+// action → Tag setup. Env overrides win; the fallbacks are the live
+// AW-18534450546 purchase action so tracking works with zero config.
+const ADS_ID =
+  process.env.NEXT_PUBLIC_GOOGLE_ADS_ID ??
+  (process.env.NEXT_PUBLIC_GA_ID?.startsWith('AW-') ? process.env.NEXT_PUBLIC_GA_ID : 'AW-18534450546')
+const ADS_CONVERSION =
+  process.env.NEXT_PUBLIC_ADS_CONVERSION ??
+  `${ADS_ID}/${process.env.NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_LABEL ?? 'zVl3COSNh8AdEPKK9YVF'}`
 
 export function trackConversion({
   value,

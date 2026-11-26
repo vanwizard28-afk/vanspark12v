@@ -7,7 +7,7 @@ import { AWIN_PUBLISHER_ID } from '@/lib/retail'
 const DEFAULT_GA_ID = 'AW-18534450546'
 
 export default function Analytics() {
-  const id = process.env.NEXT_PUBLIC_GA_ID ?? DEFAULT_GA_ID
+  const id = process.env.NEXT_PUBLIC_GA_ID ?? process.env.NEXT_PUBLIC_GOOGLE_ADS_ID ?? DEFAULT_GA_ID
   if (!id) return null
   return (
     <>

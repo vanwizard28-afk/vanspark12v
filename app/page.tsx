@@ -272,9 +272,21 @@ export default function Page() {
         .then((data) => {
           trackEvent('purchase', { value: 7.99, currency: 'GBP' })
           trackEvent('payment_success')
-          // Google Ads conversion — session id dedupes refreshes, buyer email
-          // feeds enhanced conversions (gtag hashes it before sending).
-          trackConversion({ value: 7.99, currency: 'GBP', transactionId: sessionId, email: data.email })
+          // Google Ads conversion — deduped per Stripe session in
+          // sessionStorage so a refresh of the success URL never
+          // double-counts (transaction_id is the server-side backstop).
+          const dedupKey = `vanspark-conv-${sessionId}`
+          let already = false
+          try {
+            already = sessionStorage.getItem(dedupKey) === '1'
+            if (!already) sessionStorage.setItem(dedupKey, '1')
+          } catch {
+            // storage blocked — fire anyway, Ads dedupes on transaction_id
+          }
+          if (!already) {
+            // Buyer email feeds enhanced conversions (gtag hashes it before sending).
+            trackConversion({ value: 7.99, currency: 'GBP', transactionId: sessionId, email: data.email })
+          }
         })
         .catch(() => setBlueprintOpen(true))
     } else if (purchase === 'cancelled') {
