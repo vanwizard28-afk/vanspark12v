@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-// POST /api/checkout — creates a Stripe Checkout Session for the £9.99
+// POST /api/checkout — creates a Stripe Checkout Session for the £7.99
 // blueprint. The amount is defined here as price_data so the code is the
 // single source of truth — a stale STRIPE_PRICE_ID can't drift out of sync
 // with the price shown in the UI. Until STRIPE_SECRET_KEY is configured the
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
           quantity: 1,
           price_data: {
             currency: 'gbp',
-            unit_amount: 999,
+            unit_amount: 799,
             product_data: { name: 'VanSpark 12V Pro Build Blueprint' },
           },
         },

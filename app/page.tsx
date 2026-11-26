@@ -270,11 +270,11 @@ export default function Page() {
           return downloadBlueprint(paid, sizeSystem(paid)).then(() => data)
         })
         .then((data) => {
-          trackEvent('purchase', { value: 9.99, currency: 'GBP' })
+          trackEvent('purchase', { value: 7.99, currency: 'GBP' })
           trackEvent('payment_success')
           // Google Ads conversion — session id dedupes refreshes, buyer email
           // feeds enhanced conversions (gtag hashes it before sending).
-          trackConversion({ value: 9.99, currency: 'GBP', transactionId: sessionId, email: data.email })
+          trackConversion({ value: 7.99, currency: 'GBP', transactionId: sessionId, email: data.email })
         })
         .catch(() => setBlueprintOpen(true))
     } else if (purchase === 'cancelled') {
@@ -286,7 +286,7 @@ export default function Page() {
   // covers preview clicks, the hero/sticky CTAs and the cancelled-return path.
   useEffect(() => {
     if (blueprintOpen) {
-      trackEvent('view_item', { value: 9.99, currency: 'GBP', item_name: 'VanSpark 12V Pro Build Blueprint' })
+      trackEvent('view_item', { value: 7.99, currency: 'GBP', item_name: 'VanSpark 12V Pro Build Blueprint' })
       if (!previewTrackedRef.current) {
         previewTrackedRef.current = true
         trackEvent('pdf_preview_viewed', { source: 'modal' })
@@ -377,13 +377,13 @@ export default function Page() {
     setDownloading(true)
     setCheckoutError(false)
     trackEvent('blueprint_click', { daily_wh: Math.round(totals.dailyWh), inverter_w: totals.inverterW })
-    trackEvent('begin_checkout', { value: 9.99, currency: 'GBP' })
-    trackEvent('purchase_clicked', { value: 9.99, currency: 'GBP' })
+    trackEvent('begin_checkout', { value: 7.99, currency: 'GBP' })
+    trackEvent('purchase_clicked', { value: 7.99, currency: 'GBP' })
     try {
       const res = await fetch('/api/checkout', { method: 'POST' })
       const { url } = await res.json().catch(() => ({}))
       if (res.ok && url) {
-        trackEvent('stripe_checkout_reached', { value: 9.99, currency: 'GBP' })
+        trackEvent('stripe_checkout_reached', { value: 7.99, currency: 'GBP' })
         window.location.href = url
         return
       }
@@ -675,7 +675,7 @@ export default function Page() {
               <span className="flex items-center gap-2"><Check className="size-4 text-emerald-400" /> Shareable builds</span>
             </div>
             <button onClick={openCheckout} className="mt-8 inline-flex items-center gap-2 rounded-xl bg-amber-400 px-6 py-3.5 text-sm font-bold text-slate-950 shadow-lg shadow-amber-500/20 transition hover:bg-amber-300">
-              Get your personalised blueprint · £9.99 <ArrowRight className="size-4" />
+              Get your personalised blueprint · £7.99 <ArrowRight className="size-4" />
             </button>
           </div>
           <div className="relative overflow-hidden rounded-2xl border border-amber-400/20 bg-gradient-to-br from-[#141d2b] to-[#0c1119] p-6 shadow-2xl shadow-black/20">
@@ -687,7 +687,7 @@ export default function Page() {
 
         <div className="print-notice" role="note">
           <h2 className="text-xl font-bold">Official VanSpark 12V Pro Blueprint</h2>
-          <p className="mt-3">Thanks for printing — the on-screen grids are optimised for live use, so they print as a summary only. For the full build-ready documentation, formatted for the workshop and generated from your exact configuration, the £9.99 PDF Blueprint has everything below.</p>
+          <p className="mt-3">Thanks for printing — the on-screen grids are optimised for live use, so they print as a summary only. For the full build-ready documentation, formatted for the workshop and generated from your exact configuration, the £7.99 PDF Blueprint has everything below.</p>
           <p className="mt-3 font-semibold">Includes the Master Wiring Schematic, Full Circuit Fuse/Cable Schedule, Equipment BOM, and Safety &amp; Compliance Checklist.</p>
         </div>
 
@@ -1012,7 +1012,7 @@ export default function Page() {
                 </div>
               </div>
               <button onClick={openCheckout} className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-amber-400 px-5 py-3 text-xs font-bold text-slate-950 shadow-lg shadow-amber-500/20 transition hover:bg-amber-300">
-                Get blueprint · £9.99 <ArrowRight className="size-4" />
+                Get blueprint · £7.99 <ArrowRight className="size-4" />
               </button>
             </div>
           </section>
@@ -1057,7 +1057,7 @@ export default function Page() {
                 <p className="mt-3 max-w-md text-sm leading-6 text-slate-400">Get the complete printable blueprint with wiring diagrams, fuse schedules, component links, and an installation checklist.</p>
               </div>
               <a href="#download" className="mt-8 flex w-full items-center justify-between rounded-xl bg-amber-400 px-5 py-4 text-sm font-bold text-slate-950 shadow-lg shadow-amber-500/10 transition hover:bg-amber-300 sm:w-fit sm:min-w-[330px]">
-                <span>Get your blueprint · £9.99</span>
+                <span>Get your blueprint · £7.99</span>
                 <ArrowRight className="size-4" />
               </a>
             </div>
@@ -1212,6 +1212,69 @@ export default function Page() {
                 <Lock className="size-3 shrink-0 text-amber-400" />
                 Showing 3 of {coreRows.length + supplyRows.length} line items — buy links stay live; unlock for the full component schedule.
               </p>
+              {totals.branches.length > 0 && (
+                <div className="mt-5 overflow-hidden rounded-xl border border-white/[0.07]">
+                  <div className="border-b border-white/[0.07] bg-slate-950/40 px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-amber-300">Branch circuit schedule — {totals.branches.length} live circuits · first 2 free</div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs">
+                      <thead className="text-[10px] uppercase tracking-wider text-slate-500">
+                        <tr><th className="px-4 py-2.5">Circuit</th><th className="px-4 py-2.5">Load</th><th className="px-4 py-2.5">Wire</th><th className="px-4 py-2.5">Fuse</th><th className="px-4 py-2.5">Cable needed</th></tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/[0.06] text-slate-300">
+                        {totals.branches.slice(0, 2).map((b) => (
+                          <tr key={b.name}>
+                            <td className="px-4 py-2.5 font-medium text-slate-200">{b.name}</td>
+                            <td className="px-4 py-2.5 text-slate-400">{b.amps.toFixed(1)}A</td>
+                            <td className="px-4 py-2.5 text-amber-300">{b.wireMm2}mm²</td>
+                            <td className="px-4 py-2.5 text-amber-300">{b.fuseA}A blade</td>
+                            <td className="px-4 py-2.5 text-slate-400">{b.metres}m</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  {totals.branches.length > 2 && (
+                    <div className="relative min-h-[250px]">
+                      <div inert aria-hidden="true" className="pointer-events-none select-none blur-[6px]">
+                        <table className="w-full text-left text-xs">
+                          <tbody className="divide-y divide-white/[0.06] text-slate-300">
+                            {totals.branches.slice(2).map((b) => (
+                              <tr key={b.name}>
+                                <td className="px-4 py-2.5 font-medium text-slate-200">{b.name}</td>
+                                <td className="px-4 py-2.5 text-slate-400">{b.amps.toFixed(1)}A</td>
+                                <td className="px-4 py-2.5 text-amber-300">{b.wireMm2}mm²</td>
+                                <td className="px-4 py-2.5 text-amber-300">{b.fuseA}A blade</td>
+                                <td className="px-4 py-2.5 text-slate-400">{b.metres}m</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#0b0f16] via-[#0b0f16]/95 to-transparent px-4 pb-5 pt-10">
+                        <div className="mx-auto w-full max-w-md text-center">
+                          <p className="text-[10px] font-bold uppercase tracking-[.18em] text-amber-400">{totals.branches.length - 2} more circuit{totals.branches.length - 2 === 1 ? '' : 's'} locked — inside the PDF</p>
+                          <ul className="mx-auto mt-3 grid w-fit gap-x-5 gap-y-1.5 text-left text-[11px] text-slate-400 sm:grid-cols-2">
+                            <li className="flex items-center gap-1.5"><Check className="size-3.5 shrink-0 text-amber-400" /> Circuit-by-circuit cable &amp; fuse schedule</li>
+                            <li className="flex items-center gap-1.5"><Check className="size-3.5 shrink-0 text-amber-400" /> Printable master wiring schematic</li>
+                            <li className="flex items-center gap-1.5"><Check className="size-3.5 shrink-0 text-amber-400" /> Shopping cut-list for every component</li>
+                            <li className="flex items-center gap-1.5"><Check className="size-3.5 shrink-0 text-amber-400" /> Safety sign-off checklist</li>
+                          </ul>
+                          <button
+                            onClick={() => {
+                              trackEvent('paywall_cta_click', { section: 'circuits' })
+                              openCheckout()
+                            }}
+                            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-amber-400 px-5 py-3 text-sm font-bold leading-snug text-slate-950 shadow-lg shadow-amber-500/20 transition hover:bg-amber-300 sm:w-auto"
+                          >
+                            Unlock Full Circuit Schedule &amp; Printable PDF Blueprint — £7.99 <ArrowRight className="size-4 shrink-0" />
+                          </button>
+                          <p className="mt-2.5 text-[10px] leading-4 text-slate-500">Secure Stripe checkout · instant PDF + on-page unlock</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
           <div className={unlocked ? 'mt-6' : 'relative mt-5 max-h-[560px] overflow-hidden rounded-xl'}>
@@ -1330,7 +1393,7 @@ export default function Page() {
               <p className="mt-2 text-[10px] text-slate-500">Structure of the finished document — figures above are live from your build.</p>
             </div>
             <button onClick={() => setBlueprintOpen(true)} className="mt-5 inline-flex items-center gap-2 rounded-lg bg-amber-400 px-4 py-2.5 text-sm font-bold text-slate-950 transition hover:bg-amber-300">
-              Preview the £9.99 blueprint <ArrowRight className="size-4" />
+              Preview the £7.99 blueprint <ArrowRight className="size-4" />
             </button>
             <script
               type="application/ld+json"
@@ -1343,7 +1406,7 @@ export default function Page() {
                   brand: { '@type': 'Brand', name: 'VanSpark 12V Pro' },
                   offers: {
                     '@type': 'Offer',
-                    price: '9.99',
+                    price: '7.99',
                     priceCurrency: 'GBP',
                     availability: 'https://schema.org/InStock',
                     url: 'https://vanspark.co.uk/#download',
@@ -1357,7 +1420,7 @@ export default function Page() {
             <h3 className="mt-2 text-xl font-semibold text-white">Download the full plan</h3>
             <p className="mt-2 text-xs leading-5 text-slate-500">Stripe-secured purchase for the complete PDF blueprint.</p>
             <button onClick={() => setBlueprintOpen(true)} className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-amber-400 px-4 py-3.5 text-center text-sm font-bold leading-snug text-slate-950 hover:bg-amber-300">
-              Get Your Personalised Electrical Blueprint – £9.99
+              Get Your Personalised Electrical Blueprint – £7.99
             </button>
             <p className="mt-3 text-center text-[11px] leading-5 text-slate-500">Your complete electrical design, organised into one professional, printable document. No need to manually copy down all your calculations, components and wiring information.</p>
           </div>
@@ -1397,7 +1460,7 @@ export default function Page() {
                   <div className="grid size-10 place-items-center rounded-lg bg-amber-400 text-slate-950"><ShoppingCart className="size-5" /></div>
                   <div>
                     <p className="text-sm font-semibold text-white">Professional electrical blueprint</p>
-                    <p className="text-xs text-slate-500">Instant PDF download · £9.99</p>
+                    <p className="text-xs text-slate-500">Instant PDF download · £7.99</p>
                   </div>
                 </div>
                 <ul className="mt-5 grid gap-2.5 text-sm text-slate-300">
@@ -1418,7 +1481,7 @@ export default function Page() {
                 disabled={downloading}
                 className="mt-5 w-full rounded-lg bg-amber-400 px-4 py-3 text-center text-sm font-bold leading-snug text-slate-950 transition hover:bg-amber-300 disabled:cursor-wait disabled:opacity-60"
               >
-                {downloading ? 'Redirecting to checkout…' : 'Get Your Personalised Electrical Blueprint – £9.99'}
+                {downloading ? 'Redirecting to checkout…' : 'Get Your Personalised Electrical Blueprint – £7.99'}
               </button>
               <p className="mt-3 text-center text-[11px] leading-5 text-slate-500">Your complete electrical design, organised into one professional, printable document. No need to manually copy down all your calculations, components and wiring information.</p>
               {checkoutError && (
@@ -1606,7 +1669,7 @@ function UnlockGate({ section, onUnlock }: { section: 'schematic' | 'bom'; onUnl
           }}
           className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-amber-400 px-5 py-3.5 text-sm font-bold leading-snug text-slate-950 shadow-lg shadow-amber-500/20 transition hover:bg-amber-300"
         >
-          Unlock Full Wiring Diagram &amp; Complete Component Schedule — £9.99 <ArrowRight className="size-4 shrink-0" />
+          Unlock Full Wiring Diagram &amp; Complete Component Schedule — £7.99 <ArrowRight className="size-4 shrink-0" />
         </button>
         <p className="mt-3 text-[10px] leading-4 text-slate-500">Secure Stripe checkout · instant PDF + on-page unlock</p>
       </div>

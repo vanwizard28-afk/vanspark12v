@@ -17,7 +17,7 @@ const sections: [string, string][] = [
   ],
   [
     'Digital product purchases',
-    'The £9.99 blueprint PDF is a digital download. Under UK Consumer Contracts Regulations, by starting an immediate download you acknowledge you lose the 14-day cancellation right once delivery begins. If a file is faulty, contact us and we will re-issue or refund it.',
+    'The £7.99 blueprint PDF is a digital download. Under UK Consumer Contracts Regulations, by starting an immediate download you acknowledge you lose the 14-day cancellation right once delivery begins. If a file is faulty, contact us and we will re-issue or refund it.',
   ],
   [
     'Acceptable use',
